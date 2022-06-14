@@ -2,11 +2,9 @@
 
 namespace Xamarin.Forms.DataGrid
 {
-
 	[TypeConverter(typeof(SortDataTypeConverter))]
 	public class SortData
 	{
-
 		#region ctor
 		public SortData()
 		{
@@ -43,5 +41,10 @@ namespace Xamarin.Forms.DataGrid
 
 			return false;
 		}
-	}
+
+        public override int GetHashCode()
+        {
+			return base.GetHashCode();
+        }
+    }
 }
