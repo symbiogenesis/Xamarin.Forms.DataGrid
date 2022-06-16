@@ -20,7 +20,10 @@ namespace Xamarin.Forms.DataGrid
 		public static readonly BindableProperty PropertyNameProperty =
 			BindableProperty.Create(nameof(PropertyName), typeof(string), typeof(DataGridColumn));
 
-		public static readonly BindableProperty StringFormatProperty =
+        public static readonly BindableProperty SortingPropertyNameProperty =
+            BindableProperty.Create(nameof(SortingPropertyName), typeof(string), typeof(DataGridColumn));
+
+        public static readonly BindableProperty StringFormatProperty =
 			BindableProperty.Create(nameof(StringFormat), typeof(string), typeof(DataGridColumn));
 
 		public static readonly BindableProperty CellTemplateProperty =
@@ -70,7 +73,13 @@ namespace Xamarin.Forms.DataGrid
 			set => SetValue(PropertyNameProperty, value);
 		}
 
-		public string StringFormat
+        public string SortingPropertyName
+        {
+            get { return (string)GetValue(SortingPropertyNameProperty); }
+            set { SetValue(SortingPropertyNameProperty, value); }
+        }
+
+        public string StringFormat
 		{
 			get => (string) GetValue(StringFormatProperty);
 			set => SetValue(StringFormatProperty, value);
