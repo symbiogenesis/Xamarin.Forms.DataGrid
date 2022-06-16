@@ -529,7 +529,7 @@ namespace Xamarin.Forms.DataGrid
 			_sortingOrders.Clear();
 
 			_headerView.Padding = new Thickness(BorderThickness.Left, BorderThickness.Top, BorderThickness.Right, 0);
-			_headerView.ColumnSpacing = BorderThickness.HorizontalThickness / 2;
+			_headerView.ColumnSpacing = BorderThickness.HorizontalThickness;
 
 			if (Columns != null)
 			{
