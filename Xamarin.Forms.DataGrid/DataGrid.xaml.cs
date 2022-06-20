@@ -14,11 +14,17 @@ namespace Xamarin.Forms.DataGrid
 	[Xaml.XamlCompilation(Xaml.XamlCompilationOptions.Compile)]
 	public partial class DataGrid
 	{
-		public event EventHandler Refreshing;
-		public event EventHandler<SelectionChangedEventArgs> ItemSelected;
+        #region Events
+        public event EventHandler Refreshing;
+        public event EventHandler<SelectionChangedEventArgs> ItemSelected;
+        #endregion
 
-		#region Bindable properties
-		public static readonly BindableProperty ActiveRowColorProperty =
+        #region Fields
+        private readonly Dictionary<int, SortingOrder> _sortingOrders;
+        #endregion
+
+        #region Bindable properties
+        public static readonly BindableProperty ActiveRowColorProperty =
 			BindableProperty.Create(nameof(ActiveRowColor), typeof(Color), typeof(DataGrid), Color.FromRgb(128, 144, 160),
 				coerceValue: (b, v) => {
 					if (!((DataGrid) b).SelectionEnabled)
@@ -62,7 +68,7 @@ namespace Xamarin.Forms.DataGrid
 				});
 
 		public static readonly BindableProperty RowsBackgroundColorPaletteProperty =
-			BindableProperty.Create(nameof(RowsBackgroundColorPalette), typeof(IColorProvider), typeof(DataGrid), new PaletteCollection { default(Color) },
+			BindableProperty.Create(nameof(RowsBackgroundColorPalette), typeof(IColorProvider), typeof(DataGrid), new PaletteCollection { default },
 				propertyChanged: (b, o, n) => {
 					var self = (DataGrid)b;
 					if (self.Columns != null && self.ItemsSource != null)
@@ -142,7 +148,7 @@ namespace Xamarin.Forms.DataGrid
 					var self = (DataGrid)b;
 					if (!self.SelectionEnabled && v != null)
 						throw new InvalidOperationException("Datagrid must be SelectionEnabled=true to set SelectedItem");
-					if (self.InternalItems != null && self.InternalItems.Contains(v))
+					if (self.InternalItems?.Contains(v) == true)
 						return v;
 					return null;
 				},
@@ -209,7 +215,6 @@ namespace Xamarin.Forms.DataGrid
 					if (o != n)
 						self.SortItems((SortData)n);
 				});
-
 
 		public static readonly BindableProperty HeaderLabelStyleProperty =
 			BindableProperty.Create(nameof(HeaderLabelStyle), typeof(Style), typeof(DataGrid));
@@ -437,11 +442,6 @@ namespace Xamarin.Forms.DataGrid
 
 		#endregion
 
-		#region Fields
-
-		readonly Dictionary<int, SortingOrder> _sortingOrders;
-		#endregion
-
 		#region ctor
 
 		public DataGrid()
@@ -449,7 +449,7 @@ namespace Xamarin.Forms.DataGrid
 			InitializeComponent();
 
 			_sortingOrders = new Dictionary<int, SortingOrder>();
-			
+
 			_collectionView.SelectionChanged += (s, e) => {
 				if (SelectionEnabled)
 					SelectedItem = _collectionView.SelectedItem;
@@ -459,10 +459,7 @@ namespace Xamarin.Forms.DataGrid
 				ItemSelected?.Invoke(this, e);
 			};
 
-			_refreshView.Refreshing += (s, e) => {
-				Refreshing?.Invoke(this, e);
-			};
-			
+			_refreshView.Refreshing += (s, e) => Refreshing?.Invoke(this, e);
 		}
 		#endregion
 
@@ -549,9 +546,15 @@ namespace Xamarin.Forms.DataGrid
 
 		private void SetColumnsBindingContext()
 		{
-			if (Columns != null)
-				foreach (var c in Columns)
-					c.BindingContext = BindingContext;
+			if (Columns == null)
+			{
+				return;
+			}
+
+			foreach (var c in Columns)
+			{
+				c.BindingContext = BindingContext;
+			}
 		}
 		#endregion
 
