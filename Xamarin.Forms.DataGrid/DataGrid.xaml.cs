@@ -118,7 +118,7 @@ namespace Xamarin.Forms.DataGrid
 
 		void HandleItemsSourceCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
-			InternalItems = new List<object>(((IEnumerable)sender).Cast<object>());
+			InternalItems = new List<object>(((IList)sender).Cast<object>());
 			if (SelectedItem != null && !InternalItems.Contains(SelectedItem))
 				SelectedItem = null;
 		}
