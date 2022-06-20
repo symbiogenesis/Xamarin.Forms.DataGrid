@@ -212,8 +212,7 @@ namespace Xamarin.Forms.DataGrid
 				},
 				propertyChanged: (b, o, n) => {
 					var self = (DataGrid)b;
-					if (o != n)
-						self.SortItems((SortData)n);
+					self.SortItems((SortData)n);
 				});
 
 		public static readonly BindableProperty HeaderLabelStyleProperty =
@@ -587,8 +586,8 @@ namespace Xamarin.Forms.DataGrid
             }
 
 			column.SortingIcon.Style = (order == SortingOrder.Descendant) ?
-				AscendingIconStyle ?? (Style)_headerView.Resources["DescendingIconStyle"] :
-				DescendingIconStyle ?? (Style)_headerView.Resources["AscendingIconStyle"];
+				DescendingIconStyle ?? (Style)_headerView.Resources["DescendingIconStyle"] :
+				AscendingIconStyle ?? (Style)_headerView.Resources["AscendingIconStyle"];
 
 			//Support DescendingIcon property (if setted)
 			if (column.SortingIcon.Style.Setters.All(x => x.Property != Image.SourceProperty))
