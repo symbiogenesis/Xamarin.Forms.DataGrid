@@ -37,13 +37,10 @@
 					<Setter Property="WidthRequest" Value="9" />
 					<Setter Property="Margin" Value="0,0,4,0" />
 				</Style>
-				<Style x:Key="AscendingIconStyle" TargetType="Image" BasedOn="{StaticResource ImageStyleBase}">
-					<Setter Property="Source" Value="{Binding AscendingIcon, Source={x:Reference self}}" />
-				</Style>
-				<Style x:Key="DescendingIconStyle" TargetType="Image" BasedOn="{StaticResource ImageStyleBase}">
-					<Setter Property="Source" Value="{Binding DescendingIcon, Source={x:Reference self}}" />
-				</Style>
-			</ResourceDictionary>
+                <Style x:Key="SortIconStyle" TargetType="Image" BasedOn="{StaticResource ImageStyleBase}">
+                    <Setter Property="Source" Value="{Binding SortIcon, Source={x:Reference self}}" />
+                </Style>
+            </ResourceDictionary>
 		</Grid.Resources>
 	</Grid>
 	<RefreshView Grid.Row="1" x:Name="_refreshView" Grid.RowSpan="2" >
