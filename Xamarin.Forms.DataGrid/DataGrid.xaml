@@ -21,8 +21,8 @@
 				<!--Default Header Style-->
 				<Style x:Key="HeaderDefaultStyle" TargetType="Label">
 					<Setter Property="FontAttributes" Value="Bold" />
-					<Setter Property="HorizontalOptions" Value="Center" />
-					<Setter Property="VerticalOptions" Value="Center" />
+					<Setter Property="HorizontalTextAlignment" Value="Center" />
+					<Setter Property="VerticalTextAlignment" Value="Center" />
 					<Setter Property="TextColor" Value="Black" />
                     <Setter Property="LineBreakMode" Value="{Binding LineBreakMode,Source={x:Reference self}}" />
 				</Style>

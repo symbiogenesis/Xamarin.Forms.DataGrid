@@ -74,11 +74,11 @@ namespace Xamarin.Forms.DataGrid
 				}
 				else
 				{
-					var text = new Label
+                    var text = new Label
 					{
 						TextColor = _textColor,
-						HorizontalOptions = col.HorizontalContentAlignment,
-						VerticalOptions = col.VerticalContentAlignment,
+						HorizontalTextAlignment = ConvertLayoutAlignmentToTextAlignment(col.HorizontalContentAlignment.Alignment),
+						VerticalTextAlignment = ConvertLayoutAlignmentToTextAlignment(col.VerticalContentAlignment.Alignment),
 						LineBreakMode = LineBreakMode.TailTruncation
 					};
 					text.SetBinding(Label.TextProperty,
@@ -99,6 +99,26 @@ namespace Xamarin.Forms.DataGrid
 				Children.Add(cell);
 				SetColumn(cell, DataGrid.Columns.IndexOf(col));
 			}
+		}
+
+		private static TextAlignment ConvertLayoutAlignmentToTextAlignment(LayoutAlignment layoutAlignment)
+		{
+            TextAlignment textAlignment;
+
+            switch (layoutAlignment)
+            {
+                case LayoutAlignment.Start:
+                    textAlignment = TextAlignment.Start;
+                    break;
+                case LayoutAlignment.End:
+                    textAlignment = TextAlignment.End;
+                    break;
+                default:
+                    textAlignment = TextAlignment.Center;
+                    break;
+            }
+
+            return textAlignment;
 		}
 
 		private void UpdateBackgroundColor()
