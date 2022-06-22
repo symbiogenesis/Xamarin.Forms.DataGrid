@@ -48,7 +48,7 @@ namespace Xamarin.Forms.DataGrid
 
 		#endregion
 
-		#region properties
+		#region Properties
 
 		public GridLength Width
 		{
