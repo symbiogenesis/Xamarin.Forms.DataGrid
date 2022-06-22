@@ -32,15 +32,15 @@
 		#region Bindable Properties
 		public static readonly BindableProperty DataGridProperty =
 			BindableProperty.Create(nameof(DataGrid), typeof(DataGrid), typeof(DataGridViewCell), null,
-				propertyChanged: (b, o, n) => (b as DataGridViewCell).CreateView());
+				propertyChanged: (b, o, n) => ((DataGridViewCell)b).CreateView());
 
 		public static readonly BindableProperty IndexProperty =
 			BindableProperty.Create(nameof(Index), typeof(int), typeof(DataGridViewCell), 0,
-				propertyChanged: (b, o, n) => (b as DataGridViewCell).UpdateBackgroundColor());
+				propertyChanged: (b, o, n) => ((DataGridViewCell)b).UpdateBackgroundColor());
 
 		public static readonly BindableProperty RowContextProperty =
 			BindableProperty.Create(nameof(RowContext), typeof(object), typeof(DataGridViewCell),
-				propertyChanged: (b, o, n) => (b as DataGridViewCell).UpdateBackgroundColor());
+				propertyChanged: (b, o, n) => ((DataGridViewCell)b).UpdateBackgroundColor());
 		#endregion
 
 		#region Methods
@@ -64,7 +64,7 @@
 
 				if (col.CellTemplate != null)
 				{
-					cell = new ContentView() { Content = col.CellTemplate.CreateContent() as View };
+					cell = new ContentView() { Content = (View)col.CellTemplate.CreateContent() };
 					if (col.PropertyName != null)
 					{
 						cell.SetBinding(BindingContextProperty,
@@ -131,7 +131,7 @@
 			foreach (var v in _mainLayout.Children)
 			{
 				v.BackgroundColor = color;
-				var contentView = v as ContentView;
+				var contentView = (ContentView)v;
 				if (contentView?.Content is Label)
 					((Label)contentView.Content).TextColor = _textColor;
 			}

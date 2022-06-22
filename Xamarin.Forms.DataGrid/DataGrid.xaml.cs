@@ -189,7 +189,7 @@ namespace Xamarin.Forms.DataGrid
 					else
 					{
 						self._listView.IsPullToRefreshEnabled = true;
-						self._listView.RefreshCommand = n as ICommand;
+						self._listView.RefreshCommand = (ICommand)n;
 					}
 				});
 
@@ -242,7 +242,7 @@ namespace Xamarin.Forms.DataGrid
 
 				propertyChanged: (b, o, n) => {
                     var self = (DataGrid)b;
-                    var style = (n as Style).Setters.FirstOrDefault(x => x.Property == Image.SourceProperty);
+                    var style = ((Style)n).Setters.FirstOrDefault(x => x.Property == Image.SourceProperty);
 					if (style != null)
 					{
 						if (style.Value is string vs)
@@ -256,7 +256,7 @@ namespace Xamarin.Forms.DataGrid
 			BindableProperty.Create(nameof(NoDataView), typeof(View), typeof(DataGrid),
 				propertyChanged: (b, o, n) => {
 					if (o != n)
-						((DataGrid)b)._noDataView.Content = n as View;
+						((DataGrid)b)._noDataView.Content = (View)n;
 				});
 		#endregion
 

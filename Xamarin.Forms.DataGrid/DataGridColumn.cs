@@ -41,8 +41,9 @@ namespace Xamarin.Forms.DataGrid
 		public static readonly BindableProperty HeaderLabelStyleProperty =
 			BindableProperty.Create(nameof(HeaderLabelStyle), typeof(Style), typeof(DataGridColumn),
 				propertyChanged: (b, o, n) => {
-					if (((DataGridColumn) b).HeaderLabel != null && (o != n))
-						((DataGridColumn) b).HeaderLabel.Style = n as Style;
+					var column = (DataGridColumn)b;
+                    if (column.HeaderLabel != null && (o != n))
+						column.HeaderLabel.Style = (Style)n;
 				});
 
 		#endregion

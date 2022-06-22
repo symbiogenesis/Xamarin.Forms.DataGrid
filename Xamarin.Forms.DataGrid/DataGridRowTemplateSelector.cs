@@ -11,8 +11,8 @@
 
 		protected override DataTemplate OnSelectTemplate(object item, BindableObject container)
 		{
-			var listView = container as ListView;
-			var dataGrid = listView.Parent as DataGrid;
+			var listView = (ListView) container;
+			var dataGrid = (DataGrid) listView.Parent;
 			var items = dataGrid.InternalItems;
 
 			_dataGridRowTemplate.SetValue(DataGridViewCell.DataGridProperty, dataGrid);
