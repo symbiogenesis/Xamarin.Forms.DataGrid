@@ -9,7 +9,7 @@
 		bool _hasSelected;
 		#endregion
 
-		#region properties
+		#region Properties
 		public DataGrid DataGrid
 		{
 			get { return (DataGrid)GetValue(DataGridProperty); }
