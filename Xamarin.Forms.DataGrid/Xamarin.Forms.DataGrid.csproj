@@ -13,7 +13,7 @@
 		<PackageTags>datagrid, xamarin.forms, xamarin Xamarin.Forms.Datagrid</PackageTags>
 		<NeutralLanguage>en-US</NeutralLanguage>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<Company />
+		<LangVersion>Latest</LangVersion>
 	</PropertyGroup>
 
 	<PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">

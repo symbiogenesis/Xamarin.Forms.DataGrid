@@ -17,9 +17,10 @@ namespace Xamarin.Forms.DataGrid
 		#region Events
 		public event EventHandler Refreshing;
 		public event EventHandler<SelectedItemChangedEventArgs> ItemSelected;
-		#endregion
+        #endregion
 
         #region Fields
+        private readonly Lazy<Style> defaultSortIconStyle;
         private readonly Dictionary<int, SortingOrder> _sortingOrders;
 		private readonly ListView _listView;
 		#endregion
@@ -426,6 +427,8 @@ namespace Xamarin.Forms.DataGrid
 			set => SetValue(SortIconStyleProperty, value);
 		}
 
+		public Style DefaultSortIconStyle => defaultSortIconStyle.Value;
+
 		public View NoDataView
 		{
 			get { return (View)GetValue(NoDataViewProperty); }
@@ -443,7 +446,9 @@ namespace Xamarin.Forms.DataGrid
 		{
 			InitializeComponent();
 
-			_sortingOrders = new Dictionary<int, SortingOrder>();
+            defaultSortIconStyle = new(() => (Style)_headerView.Resources["SortIconStyle"]);
+
+            _sortingOrders = new Dictionary<int, SortingOrder>();
 
 			_listView = new ListView(cachingStrategy) {
 				BackgroundColor = Color.Transparent,
@@ -584,7 +589,7 @@ namespace Xamarin.Forms.DataGrid
 			else
 				items = items.OrderBy(x => ReflectionUtils.GetValueByPath(x, column.PropertyName)).ToList();
 
-			column.SortingIcon.Style = SortIconStyle ?? (Style) _headerView.Resources["SortIconStyle"];
+			column.SortingIcon.Style = SortIconStyle ?? DefaultSortIconStyle;
             column.SortingIcon.RotateXTo((order == SortingOrder.Descendant) ? 180 : 0);
 
 			//Support DescendingIcon property (if setted)
