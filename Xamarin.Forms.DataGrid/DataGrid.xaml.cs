@@ -96,13 +96,13 @@ namespace Xamarin.Forms.DataGrid
 				propertyChanged: (b, o, n) => {
                     var self = (DataGrid)b;
                     //ObservableCollection Tracking 
-                    if (o != null && o is INotifyCollectionChanged)
-						(o as INotifyCollectionChanged).CollectionChanged -= self.HandleItemsSourceCollectionChanged;
+                    if (o != null && o is INotifyCollectionChanged oChanged)
+						oChanged.CollectionChanged -= self.HandleItemsSourceCollectionChanged;
 
 					if (n != null)
 					{
-						if (n is INotifyCollectionChanged)
-							(n as INotifyCollectionChanged).CollectionChanged += self.HandleItemsSourceCollectionChanged;
+						if (n is INotifyCollectionChanged nChanged)
+							nChanged.CollectionChanged += self.HandleItemsSourceCollectionChanged;
 
 						self.InternalItems = new List<object>(((IEnumerable)n).Cast<object>());
 					}
@@ -112,7 +112,7 @@ namespace Xamarin.Forms.DataGrid
 
 					if (self.NoDataView != null)
 					{
-						if (self.ItemsSource == null || self.InternalItems.Count() == 0)
+						if (self.ItemsSource == null || self.InternalItems.Count == 0)
 							self._noDataView.IsVisible = true;
 						else if (self._noDataView.IsVisible)
 							self._noDataView.IsVisible = false;
@@ -498,7 +498,7 @@ namespace Xamarin.Forms.DataGrid
 		{
 			column.HeaderLabel.Style = column.HeaderLabelStyle ?? this.HeaderLabelStyle ?? (Style)_headerView.Resources["HeaderDefaultStyle"];
 
-			Grid grid = new Grid {
+			Grid grid = new() {
 				ColumnSpacing = 0,
 			};
 
@@ -512,7 +512,7 @@ namespace Xamarin.Forms.DataGrid
 				grid.Children.Add(column.SortingIcon);
 				Grid.SetColumn(column.SortingIcon, 1);
 
-				TapGestureRecognizer tgr = new TapGestureRecognizer();
+				TapGestureRecognizer tgr = new();
 				tgr.Tapped += (s, e) => {
 					int index = Columns.IndexOf(column);
 					SortingOrder order = _sortingOrders[index] == SortingOrder.Ascendant ? SortingOrder.Descendant : SortingOrder.Ascendant;
