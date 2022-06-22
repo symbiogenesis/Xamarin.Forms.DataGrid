@@ -73,23 +73,17 @@
 				}
 				else
 				{
-                    var text = new Label
+                    cell = new Label
 					{
-						TextColor = _textColor,
+                        BackgroundColor = _bgColor,
+                        TextColor = _textColor,
 						HorizontalTextAlignment = ConvertLayoutAlignmentToTextAlignment(col.HorizontalContentAlignment.Alignment),
 						VerticalTextAlignment = ConvertLayoutAlignmentToTextAlignment(col.VerticalContentAlignment.Alignment),
 						LineBreakMode = LineBreakMode.TailTruncation
 					};
-					text.SetBinding(Label.TextProperty, new Binding(col.PropertyName, BindingMode.Default, stringFormat: col.StringFormat));
-					text.SetBinding(Label.FontSizeProperty, new Binding(DataGrid.FontSizeProperty.PropertyName, BindingMode.Default, source: DataGrid));
-					text.SetBinding(Label.FontFamilyProperty, new Binding(DataGrid.FontFamilyProperty.PropertyName, BindingMode.Default, source: DataGrid));
-
-					cell = new ContentView
-					{
-						Padding = 0,
-						BackgroundColor = _bgColor,
-						Content = text,
-					};
+                    cell.SetBinding(Label.TextProperty, new Binding(col.PropertyName, BindingMode.Default, stringFormat: col.StringFormat));
+                    cell.SetBinding(Label.FontSizeProperty, new Binding(DataGrid.FontSizeProperty.PropertyName, BindingMode.Default, source: DataGrid));
+                    cell.SetBinding(Label.FontFamilyProperty, new Binding(DataGrid.FontFamilyProperty.PropertyName, BindingMode.Default, source: DataGrid));
 				}
 
 				_mainLayout.Children.Add(cell);
@@ -131,10 +125,9 @@
 			foreach (var v in _mainLayout.Children)
 			{
 				v.BackgroundColor = color;
-				var contentView = (ContentView)v;
-				if (contentView?.Content is Label)
-					((Label)contentView.Content).TextColor = _textColor;
-			}
+                if (v is Label label)
+                    label.TextColor = _textColor;
+            }
 		}
 
 		protected override void OnBindingContextChanged()
