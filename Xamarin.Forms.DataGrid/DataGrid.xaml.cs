@@ -273,12 +273,6 @@ namespace Xamarin.Forms.DataGrid
 			set { SetValue(HeaderBackgroundProperty, value); }
 		}
 
-		[Obsolete("Please use HeaderLabelStyle", true)]
-		public Color HeaderTextColor
-		{
-			get; set;
-		}
-
 		public LineBreakMode LineBreakMode
 		{
 			get => (LineBreakMode)GetValue(LineBreakModeProperty);
@@ -335,12 +329,6 @@ namespace Xamarin.Forms.DataGrid
 		{
 			get { return (double)GetValue(FontSizeProperty); }
 			set { SetValue(FontSizeProperty, value); }
-		}
-
-		[Obsolete("Please use HeaderLabelStyle", true)]
-		public double HeaderFontSize
-		{
-			get; set;
 		}
 
 		public string FontFamily
