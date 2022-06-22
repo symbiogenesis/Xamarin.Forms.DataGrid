@@ -1,76 +1,75 @@
-﻿using System.Linq;
-
-namespace Xamarin.Forms.DataGrid
+﻿namespace Xamarin.Forms.DataGrid
 {
-	internal sealed class DataGridViewCell : Grid
+	internal sealed class DataGridViewCell : ViewCell
 	{
 		#region Fields
-
-		private Color _bgColor;
-		private Color _textColor;
-		private bool _hasSelected;
-
+		Grid _mainLayout;
+		Color _bgColor;
+		Color _textColor;
+		bool _hasSelected;
 		#endregion
 
 		#region properties
-
 		public DataGrid DataGrid
 		{
-			get => (DataGrid) GetValue(DataGridProperty);
-			set => SetValue(DataGridProperty, value);
+			get { return (DataGrid)GetValue(DataGridProperty); }
+			set { SetValue(DataGridProperty, value); }
 		}
 
 		public int Index
 		{
-			get => (int) GetValue(IndexProperty);
-			set => SetValue(IndexProperty, value);
+			get { return (int)GetValue(IndexProperty); }
+			set { SetValue(IndexProperty, value); }
 		}
 
 		public object RowContext
 		{
-			get => GetValue(RowContextProperty);
-			set => SetValue(RowContextProperty, value);
+			get { return GetValue(RowContextProperty); }
+			set { SetValue(RowContextProperty, value); }
 		}
-
 		#endregion
 
 		#region Bindable Properties
-
 		public static readonly BindableProperty DataGridProperty =
 			BindableProperty.Create(nameof(DataGrid), typeof(DataGrid), typeof(DataGridViewCell), null,
-				propertyChanged: (b, o, n) => ((DataGridViewCell) b).CreateView());
+				propertyChanged: (b, o, n) => (b as DataGridViewCell).CreateView());
 
 		public static readonly BindableProperty IndexProperty =
 			BindableProperty.Create(nameof(Index), typeof(int), typeof(DataGridViewCell), 0,
-				propertyChanged: (b, o, n) => ((DataGridViewCell) b).UpdateBackgroundColor());
+				propertyChanged: (b, o, n) => (b as DataGridViewCell).UpdateBackgroundColor());
 
 		public static readonly BindableProperty RowContextProperty =
 			BindableProperty.Create(nameof(RowContext), typeof(object), typeof(DataGridViewCell),
-				propertyChanged: (b, o, n) => ((DataGridViewCell) b).UpdateBackgroundColor());
-
+				propertyChanged: (b, o, n) => (b as DataGridViewCell).UpdateBackgroundColor());
 		#endregion
 
 		#region Methods
-
 		private void CreateView()
 		{
 			UpdateBackgroundColor();
-			BackgroundColor = DataGrid.BorderColor;
-			ColumnSpacing = DataGrid.BorderThickness.HorizontalThickness / 2;
-			Padding = new Thickness(DataGrid.BorderThickness.HorizontalThickness / 2,
-				DataGrid.BorderThickness.VerticalThickness / 2);
+
+			_mainLayout = new Grid()
+			{
+				BackgroundColor = DataGrid.BorderColor,
+				RowSpacing = 0,
+				ColumnSpacing = DataGrid.BorderThickness.HorizontalThickness / 2,
+				Padding = new Thickness(DataGrid.BorderThickness.HorizontalThickness / 2,
+										DataGrid.BorderThickness.VerticalThickness / 2),
+			};
 
 			foreach (var col in DataGrid.Columns)
 			{
-				ColumnDefinitions.Add(new ColumnDefinition {Width = col.Width});
+				_mainLayout.ColumnDefinitions.Add(new ColumnDefinition() { Width = col.Width });
 				View cell;
 
 				if (col.CellTemplate != null)
 				{
-					cell = new ContentView {Content = col.CellTemplate.CreateContent() as View};
+					cell = new ContentView() { Content = col.CellTemplate.CreateContent() as View };
 					if (col.PropertyName != null)
+					{
 						cell.SetBinding(BindingContextProperty,
 							new Binding(col.PropertyName, source: RowContext));
+					}
 				}
 				else
 				{
@@ -81,56 +80,46 @@ namespace Xamarin.Forms.DataGrid
 						VerticalTextAlignment = ConvertLayoutAlignmentToTextAlignment(col.VerticalContentAlignment.Alignment),
 						LineBreakMode = LineBreakMode.TailTruncation
 					};
-					text.SetBinding(Label.TextProperty,
-						new Binding(col.PropertyName, BindingMode.Default, stringFormat: col.StringFormat));
-					text.SetBinding(Label.FontSizeProperty,
-						new Binding(DataGrid.FontSizeProperty.PropertyName, BindingMode.Default, source: DataGrid));
-					text.SetBinding(Label.FontFamilyProperty,
-						new Binding(DataGrid.FontFamilyProperty.PropertyName, BindingMode.Default, source: DataGrid));
+					text.SetBinding(Label.TextProperty, new Binding(col.PropertyName, BindingMode.Default, stringFormat: col.StringFormat));
+					text.SetBinding(Label.FontSizeProperty, new Binding(DataGrid.FontSizeProperty.PropertyName, BindingMode.Default, source: DataGrid));
+					text.SetBinding(Label.FontFamilyProperty, new Binding(DataGrid.FontFamilyProperty.PropertyName, BindingMode.Default, source: DataGrid));
 
 					cell = new ContentView
 					{
 						Padding = 0,
 						BackgroundColor = _bgColor,
-						Content = text
+						Content = text,
 					};
 				}
 
-				Children.Add(cell);
-				SetColumn(cell, DataGrid.Columns.IndexOf(col));
+				_mainLayout.Children.Add(cell);
+				Grid.SetColumn(cell, DataGrid.Columns.IndexOf(col));
 			}
+
+			View = _mainLayout;
 		}
 
 		private static TextAlignment ConvertLayoutAlignmentToTextAlignment(LayoutAlignment layoutAlignment)
 		{
-            TextAlignment textAlignment;
-
             switch (layoutAlignment)
             {
                 case LayoutAlignment.Start:
-                    textAlignment = TextAlignment.Start;
-                    break;
+                    return TextAlignment.Start;
                 case LayoutAlignment.End:
-                    textAlignment = TextAlignment.End;
-                    break;
+                    return TextAlignment.End;
                 default:
-                    textAlignment = TextAlignment.Center;
-                    break;
+                    return TextAlignment.Center;
             }
-
-            return textAlignment;
-		}
+        }
 
 		private void UpdateBackgroundColor()
 		{
 			_hasSelected = DataGrid.SelectedItem == RowContext;
-			var actualIndex = DataGrid?.InternalItems?.IndexOf(BindingContext) ?? -1;
+			int actualIndex = DataGrid?.InternalItems?.IndexOf(BindingContext) ?? -1;
 			if (actualIndex > -1)
 			{
-				_bgColor =
-					DataGrid.SelectionEnabled && DataGrid.SelectedItem != null && DataGrid.SelectedItem == RowContext
-						? DataGrid.ActiveRowColor
-						: DataGrid.RowsBackgroundColorPalette.GetColor(actualIndex, BindingContext);
+				_bgColor = (DataGrid.SelectionEnabled && DataGrid.SelectedItem != null && DataGrid.SelectedItem == RowContext) ?
+					DataGrid.ActiveRowColor : DataGrid.RowsBackgroundColorPalette.GetColor(actualIndex, BindingContext);
 				_textColor = DataGrid.RowsTextColorPalette.GetColor(actualIndex, BindingContext);
 
 				ChangeColor(_bgColor);
@@ -139,12 +128,12 @@ namespace Xamarin.Forms.DataGrid
 
 		private void ChangeColor(Color color)
 		{
-			foreach (var v in Children)
+			foreach (var v in _mainLayout.Children)
 			{
 				v.BackgroundColor = color;
 				var contentView = v as ContentView;
-				if (contentView?.Content is Label label)
-					label.TextColor = _textColor;
+				if (contentView?.Content is Label)
+					((Label)contentView.Content).TextColor = _textColor;
 			}
 		}
 
@@ -163,12 +152,13 @@ namespace Xamarin.Forms.DataGrid
 				DataGrid.ItemSelected -= DataGrid_ItemSelected;
 		}
 
-		private void DataGrid_ItemSelected(object sender, SelectionChangedEventArgs e)
+		private void DataGrid_ItemSelected(object sender, SelectedItemChangedEventArgs e)
 		{
-			if (DataGrid.SelectionEnabled && (e.CurrentSelection.FirstOrDefault() == RowContext || _hasSelected))
+			if (DataGrid.SelectionEnabled && (e.SelectedItem == RowContext || _hasSelected))
+			{
 				UpdateBackgroundColor();
+			}
 		}
-
 		#endregion
 	}
 }
