@@ -134,5 +134,4 @@ namespace Xamarin.Forms.DataGrid
 			SizeChanged?.Invoke(this, EventArgs.Empty);
 		}
 	}
-
 }

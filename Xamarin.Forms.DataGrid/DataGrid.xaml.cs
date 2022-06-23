@@ -20,9 +20,10 @@ namespace Xamarin.Forms.DataGrid
         #endregion
 
         #region Fields
-        private readonly Lazy<Style> defaultSortIconStyle;
+        private static Lazy<Style> _defaultSortIconStyle;
         private readonly Dictionary<int, SortingOrder> _sortingOrders;
 		private readonly ListView _listView;
+		private static readonly Lazy<ImageSource> _defaultSortIcon = new(() => ImageSource.FromResource("Xamarin.Forms.DataGrid.up.png", typeof(DataGrid).GetTypeInfo().Assembly));
 		#endregion
 
         #region Bindable properties
@@ -235,7 +236,7 @@ namespace Xamarin.Forms.DataGrid
 			BindableProperty.Create(nameof(HeaderLabelStyle), typeof(Style), typeof(DataGrid));
 
 		public static readonly BindableProperty SortIconProperty =
-			BindableProperty.Create(nameof(SortIcon), typeof(ImageSource), typeof(DataGrid), ImageSource.FromResource("Xamarin.Forms.DataGrid.up.png", typeof(DataGrid).GetTypeInfo().Assembly));
+			BindableProperty.Create(nameof(SortIcon), typeof(ImageSource), typeof(DataGrid), DefaultSortIcon);
 
 		public static readonly BindableProperty SortIconStyleProperty =
 			BindableProperty.Create(nameof(SortIconStyle), typeof(Style), typeof(DataGrid), null,
@@ -415,9 +416,10 @@ namespace Xamarin.Forms.DataGrid
 			set => SetValue(SortIconStyleProperty, value);
 		}
 
-		public Style DefaultSortIconStyle => defaultSortIconStyle.Value;
+		public static Style DefaultSortIconStyle => _defaultSortIconStyle.Value;
+        public static ImageSource DefaultSortIcon => _defaultSortIcon.Value;
 
-		public View NoDataView
+        public View NoDataView
 		{
 			get { return (View)GetValue(NoDataViewProperty); }
 			set { SetValue(NoDataViewProperty, value); }
@@ -434,7 +436,7 @@ namespace Xamarin.Forms.DataGrid
 		{
 			InitializeComponent();
 
-            defaultSortIconStyle = new(() => (Style)_headerView.Resources["SortIconStyle"]);
+            _defaultSortIconStyle = new(() => (Style)_headerView.Resources["SortIconStyle"]);
 
             _sortingOrders = new Dictionary<int, SortingOrder>();
 
