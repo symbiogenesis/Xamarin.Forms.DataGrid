@@ -559,7 +559,7 @@ namespace Xamarin.Forms.DataGrid
 
 		private void SortTapped(object sender, EventArgs e)
 		{
-			int index = Columns.IndexOf((DataGridColumn) sender);
+			int index = Grid.GetColumn((BindableObject)sender);
 			SortingOrder order = _sortingOrders[index] == SortingOrder.Ascendant ? SortingOrder.Descendant : SortingOrder.Ascendant;
 
 			if (Columns.ElementAt(index).SortingEnabled)
@@ -628,18 +628,23 @@ namespace Xamarin.Forms.DataGrid
 			else if (column.PropertyName == null && column.SortingPropertyName == null)
 				throw new InvalidOperationException("Please set the PropertyName or SortingPropertyName property of Column");
 
+			column.SortingIcon.Style = SortIconStyle ?? DefaultSortIconStyle;
+
 			IEnumerable<object> sorted;
 
 			//Sort
 			if (order == SortingOrder.Descendant)
-				sorted = _internalItems.OrderByDescending(x => ReflectionUtils.GetValueByPath(x, column.PropertyName));
+            {
+                sorted = _internalItems.OrderByDescending(x => ReflectionUtils.GetPropertyValue(x, sData.Index));
+				column.SortingIcon.RotateXTo(180);
+			}
 			else
-				sorted = _internalItems.OrderBy(x => ReflectionUtils.GetValueByPath(x, column.PropertyName));
+            {
+                sorted = _internalItems.OrderBy(x => ReflectionUtils.GetPropertyValue(x, sData.Index));
+				column.SortingIcon.RotateXTo(0);
+			}
 
 			_internalItems = sorted.ToList();
-
-			column.SortingIcon.Style = SortIconStyle ?? DefaultSortIconStyle;
-            column.SortingIcon.RotateXTo((order == SortingOrder.Descendant) ? 180 : 0);
 
 			//Support DescendingIcon property (if setted)
 			if (!column.SortingIcon.Style.Setters.Any(x => x.Property == Image.SourceProperty))
