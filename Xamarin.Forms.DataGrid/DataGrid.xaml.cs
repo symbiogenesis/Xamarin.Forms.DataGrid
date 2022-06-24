@@ -646,7 +646,7 @@ namespace Xamarin.Forms.DataGrid
 
 			_internalItems = sorted.ToList();
 
-			//Support DescendingIcon property (if setted)
+			//Support DescendingIcon property (if set)
 			if (!column.SortingIcon.Style.Setters.Any(x => x.Property == Image.SourceProperty))
 			{
 				if (SortIconProperty.DefaultValue != SortIcon)
