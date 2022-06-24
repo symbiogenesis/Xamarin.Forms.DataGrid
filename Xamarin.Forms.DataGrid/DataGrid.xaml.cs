@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Reflection;
@@ -12,7 +11,7 @@ using Xamarin.Forms.DataGrid.Utils;
 [assembly: InternalsVisibleTo("Xamarin.Forms.DataGrid.UnitTest")]
 namespace Xamarin.Forms.DataGrid
 {
-	[Xaml.XamlCompilation(Xaml.XamlCompilationOptions.Compile)]
+    [Xaml.XamlCompilation(Xaml.XamlCompilationOptions.Compile)]
 	public partial class DataGrid : Grid
 	{
 		#region Events
@@ -461,6 +460,12 @@ namespace Xamarin.Forms.DataGrid
 		{
 		}
 
+		~DataGrid()
+        {
+			_listView.ItemSelected -= ListViewItemSelected;
+			_listView.Refreshing -= ListViewRefreshing;
+		}
+
 		public DataGrid(ListViewCachingStrategy cachingStrategy)
 		{
 			InitializeComponent();
@@ -475,24 +480,15 @@ namespace Xamarin.Forms.DataGrid
 				SeparatorVisibility = SeparatorVisibility.None,
 			};
 
-			_listView.ItemSelected += (s, e) => {
-                if (SelectionEnabled)
-                {
-                    SelectedItem = _listView.SelectedItem;
-                    ItemSelected?.Invoke(this, e);
-                }
-                else
-                {
-                    _listView.SelectedItem = null;
-                }
-            };
+			_listView.ItemSelected += ListViewItemSelected;
 
-			_listView.Refreshing += (s, e) => Refreshing?.Invoke(this, e);
+			_listView.Refreshing += ListViewRefreshing;
 
 			_listView.SetBinding(ListView.RowHeightProperty, new Binding("RowHeight", source: this));
 			Grid.SetRow(_listView, 1);
 			Children.Add(_listView);
 		}
+
 		#endregion
 
 		#region UI Methods
@@ -657,6 +653,24 @@ namespace Xamarin.Forms.DataGrid
         {
 			_listView.ScrollTo(item, position, animated);
         }
-        #endregion
-    }
+
+		private void ListViewItemSelected(object sender, SelectedItemChangedEventArgs e)
+		{
+			if (SelectionEnabled)
+			{
+				SelectedItem = _listView.SelectedItem;
+				ItemSelected?.Invoke(this, e);
+			}
+			else
+			{
+				_listView.SelectedItem = null;
+			}
+		}
+
+		private void ListViewRefreshing(object sender, EventArgs e)
+		{
+			Refreshing?.Invoke(this, e);
+		}
+		#endregion
+	}
 }
