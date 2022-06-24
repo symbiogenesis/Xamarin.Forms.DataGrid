@@ -2,7 +2,7 @@
 {
 	internal class DataGridRowTemplateSelector : DataTemplateSelector
 	{
-		private static DataTemplate _dataGridRowTemplate;
+		private readonly DataTemplate _dataGridRowTemplate;
 
 		public DataGridRowTemplateSelector()
 		{
