@@ -571,7 +571,6 @@ namespace Xamarin.Forms.DataGrid
 			if (InternalItems == null || sData.Index >= Columns.Count || !Columns[sData.Index].SortingEnabled)
 				return;
 
-			var items = InternalItems;
 			var column = Columns[sData.Index];
 			SortingOrder order = sData.Order;
 
@@ -580,11 +579,15 @@ namespace Xamarin.Forms.DataGrid
 			else if (column.PropertyName == null && column.SortingPropertyName == null)
 				throw new InvalidOperationException("Please set the PropertyName or SortingPropertyName property of Column");
 
+			IEnumerable<object> sorted;
+
 			//Sort
 			if (order == SortingOrder.Descendant)
-				items = items.OrderByDescending(x => ReflectionUtils.GetValueByPath(x, column.PropertyName)).ToList();
+				sorted = _internalItems.OrderByDescending(x => ReflectionUtils.GetValueByPath(x, column.PropertyName));
 			else
-				items = items.OrderBy(x => ReflectionUtils.GetValueByPath(x, column.PropertyName)).ToList();
+				sorted = _internalItems.OrderBy(x => ReflectionUtils.GetValueByPath(x, column.PropertyName));
+
+			_internalItems = sorted.ToList();
 
 			column.SortingIcon.Style = SortIconStyle ?? DefaultSortIconStyle;
             column.SortingIcon.RotateXTo((order == SortingOrder.Descendant) ? 180 : 0);
@@ -607,8 +610,6 @@ namespace Xamarin.Forms.DataGrid
             }
 
             column.SortingIcon.IsVisible = true;
-
-            _internalItems = items;
 
 			_sortingOrders[sData.Index] = order;
 			SortedColumnIndex = sData;
