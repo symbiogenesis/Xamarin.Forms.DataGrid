@@ -17,10 +17,12 @@ namespace Xamarin.Forms.DataGrid
 		#region Events
 		public event EventHandler Refreshing;
 		public event EventHandler<SelectedItemChangedEventArgs> ItemSelected;
-        #endregion
+		#endregion
 
-        #region Fields
-        private static readonly Lazy<ImageSource> _defaultSortIcon = new(() => ImageSource.FromResource("Xamarin.Forms.DataGrid.up.png", typeof(DataGrid).GetTypeInfo().Assembly));
+		#region Fields
+		private static ColumnDefinition _starColumn = new() { Width = DataGridColumn.StarLength };
+		private static ColumnDefinition _autoColumn = new() { Width = DataGridColumn.AutoLength };
+		private static readonly Lazy<ImageSource> _defaultSortIcon = new(() => ImageSource.FromResource("Xamarin.Forms.DataGrid.up.png", typeof(DataGrid).GetTypeInfo().Assembly));
         private static Lazy<Style> _defaultSortIconStyle;
         private readonly Dictionary<int, SortingOrder> _sortingOrders;
 		private readonly ListView _listView;
@@ -102,10 +104,10 @@ namespace Xamarin.Forms.DataGrid
 
 					if (n != null)
 					{
+						self.InternalItems = ((IEnumerable)n).Cast<object>().ToList();
+
 						if (n is INotifyCollectionChanged nChanged)
 							nChanged.CollectionChanged += self.HandleItemsSourceCollectionChanged;
-
-						self.InternalItems = new List<object>(((IEnumerable)n).Cast<object>());
 					}
 
 					if (self.SelectedItem != null && !self.InternalItems.Contains(self.SelectedItem))
@@ -313,14 +315,11 @@ namespace Xamarin.Forms.DataGrid
 			{
 				_internalItems = value;
 
-				if (IsSortable && SortedColumnIndex != null)
-					SortItems(SortedColumnIndex);
-				else
-					_listView.ItemsSource = _internalItems;
+				SortIfNeeded();
 			}
 		}
 
-		public ColumnCollection Columns
+        public ColumnCollection Columns
 		{
 			get { return (ColumnCollection)GetValue(ColumnsProperty); }
 			set { SetValue(ColumnsProperty, value); }
@@ -492,8 +491,8 @@ namespace Xamarin.Forms.DataGrid
 				ColumnSpacing = 0,
 			};
 
-			grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
-			grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Auto) });
+			grid.ColumnDefinitions.Add(_starColumn);
+			grid.ColumnDefinitions.Add(_autoColumn);
 
 			if (IsSortable)
 			{
@@ -542,6 +541,14 @@ namespace Xamarin.Forms.DataGrid
 					_sortingOrders.Add(Columns.IndexOf(col), SortingOrder.None);
 				}
 			}
+		}
+
+		private void SortIfNeeded()
+		{
+			if (IsSortable && SortedColumnIndex != null)
+				SortItems(SortedColumnIndex);
+			else
+				_listView.ItemsSource = _internalItems;
 		}
 
 		private void SetColumnsBindingContext()

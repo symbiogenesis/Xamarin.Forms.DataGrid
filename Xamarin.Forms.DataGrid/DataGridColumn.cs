@@ -4,9 +4,12 @@ namespace Xamarin.Forms.DataGrid
 {
 	public class DataGridColumn : BindableObject, IDefinition
 	{
+		public static readonly GridLength AutoLength = new(1, GridUnitType.Auto);
+		public static readonly GridLength StarLength = new(1, GridUnitType.Star);
+
 		#region Bindable Properties
 		public static readonly BindableProperty WidthProperty =
-			BindableProperty.Create(nameof(Width), typeof(GridLength), typeof(DataGridColumn), new GridLength(1, GridUnitType.Star),
+			BindableProperty.Create(nameof(Width), typeof(GridLength), typeof(DataGridColumn), StarLength,
 				propertyChanged: (b, o, n) => { if (o != n) ((DataGridColumn) b).OnSizeChanged(); });
 
 		public static readonly BindableProperty TitleProperty =
