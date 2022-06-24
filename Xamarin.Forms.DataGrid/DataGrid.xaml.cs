@@ -11,13 +11,13 @@ using Xamarin.Forms.DataGrid.Utils;
 [assembly: InternalsVisibleTo("Xamarin.Forms.DataGrid.UnitTest")]
 namespace Xamarin.Forms.DataGrid
 {
-    [Xaml.XamlCompilation(Xaml.XamlCompilationOptions.Compile)]
-	public partial class DataGrid : Grid
+	[Xaml.XamlCompilation(Xaml.XamlCompilationOptions.Compile)]
+	public partial class DataGrid
 	{
-		#region Events
-		public event EventHandler Refreshing;
-		public event EventHandler<SelectedItemChangedEventArgs> ItemSelected;
-		#endregion
+        #region Events
+        public event EventHandler Refreshing;
+        public event EventHandler<SelectionChangedEventArgs> ItemSelected;
+        #endregion
 
 		#region Fields
 		private static readonly ColumnDefinition _starColumn = new() { Width = DataGridColumn.StarLength };
@@ -25,8 +25,7 @@ namespace Xamarin.Forms.DataGrid
 		private static readonly Lazy<ImageSource> _defaultSortIcon = new(() => ImageSource.FromResource("Xamarin.Forms.DataGrid.up.png", typeof(DataGrid).GetTypeInfo().Assembly));
         private static Lazy<Style> _defaultSortIconStyle;
         private readonly Dictionary<int, SortingOrder> _sortingOrders;
-		private readonly ListView _listView;
-		#endregion
+        #endregion
 
         #region Bindable properties
         public static readonly BindableProperty ActiveRowColorProperty =
@@ -113,13 +112,13 @@ namespace Xamarin.Forms.DataGrid
 					if (self.SelectedItem != null && !self.InternalItems.Contains(self.SelectedItem))
 						self.SelectedItem = null;
 
-					if (self.NoDataView != null)
-					{
-						if (self.ItemsSource == null || self.InternalItems.Count == 0)
-							self._noDataView.IsVisible = true;
-						else if (self._noDataView.IsVisible)
-							self._noDataView.IsVisible = false;
-					}
+					//if (self.NoDataView != null)
+					//{
+					//	if (self.ItemsSource == null || !self.InternalItems.Any())
+					//		self._noDataView.IsVisible = true;
+					//	else if (self._noDataView.IsVisible)
+					//		self._noDataView.IsVisible = false;
+					//}
 				});
 
 		void HandleItemsSourceCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -159,17 +158,13 @@ namespace Xamarin.Forms.DataGrid
 		}
 
 		public static readonly BindableProperty RowHeightProperty =
-			BindableProperty.Create(nameof(RowHeight), typeof(int), typeof(DataGrid), 40,
-				propertyChanged: (b, o, n) => {
-                    var self = (DataGrid)b;
-                    self._listView.RowHeight = (int)n;
-				});
+			BindableProperty.Create(nameof(RowHeight), typeof(int), typeof(DataGrid), 40);
 
 		public static readonly BindableProperty HeaderHeightProperty =
 			BindableProperty.Create(nameof(HeaderHeight), typeof(int), typeof(DataGrid), 40,
 				propertyChanged: (b, o, n) => {
-                    var self = (DataGrid)b;
-                    self._headerView.HeightRequest = (int)n;
+					var self = (DataGrid)b;
+					self._headerView.HeightRequest = (int)n;
 				});
 
 		public static readonly BindableProperty IsSortableProperty =
@@ -189,13 +184,12 @@ namespace Xamarin.Forms.DataGrid
 						throw new InvalidOperationException("Datagrid must be SelectionEnabled=true to set SelectedItem");
 					if (self.InternalItems?.Contains(v) == true)
 						return v;
-					else
-						return null;
+					return null;
 				},
 				propertyChanged: (b, o, n) => {
-                    var self = (DataGrid)b;
-                    if (self._listView.SelectedItem != n)
-						self._listView.SelectedItem = n;
+					var self = (DataGrid)b;
+					if (self._collectionView.SelectedItem != n)
+						self._collectionView.SelectedItem = n;
 				}
 			);
 
@@ -215,41 +209,36 @@ namespace Xamarin.Forms.DataGrid
                     var self = (DataGrid)b;
                     if (n == null)
 					{
-						self._listView.IsPullToRefreshEnabled = false;
-						self._listView.RefreshCommand = null;
+						self._refreshView.IsEnabled = false;
+						self._refreshView.Command = null;
 					}
 					else
 					{
-						self._listView.IsPullToRefreshEnabled = true;
-						self._listView.RefreshCommand = (ICommand)n;
+						self._refreshView.IsEnabled = true;
+						self._refreshView.Command = n as ICommand;
 					}
 				});
 
 		public static readonly BindableProperty IsRefreshingProperty =
 			BindableProperty.Create(nameof(IsRefreshing), typeof(bool), typeof(DataGrid), false, BindingMode.TwoWay,
-				propertyChanged: (b, o, n) => ((DataGrid)b)._listView.IsRefreshing = (bool)n);
+				propertyChanged: (b, o, n) => ((DataGrid) b)._refreshView.IsRefreshing = (bool)n);
 
 		public static readonly BindableProperty BorderThicknessProperty =
 			BindableProperty.Create(nameof(BorderThickness), typeof(Thickness), typeof(DataGrid), new Thickness(1),
 				propertyChanged: (b, o, n) => {
-                    var self = (DataGrid)b;
-                    self._headerView.ColumnSpacing = ((Thickness)n).HorizontalThickness / 2;
-                    self._headerView.Padding = ((Thickness)n).HorizontalThickness / 2;
+					((DataGrid) b)._headerView.ColumnSpacing = ((Thickness)n).HorizontalThickness / 2;
+					((DataGrid) b)._headerView.Padding = ((Thickness)n).HorizontalThickness / 2;
 				});
 
 		public static readonly BindableProperty HeaderBordersVisibleProperty =
 			BindableProperty.Create(nameof(HeaderBordersVisible), typeof(bool), typeof(DataGrid), true,
-				propertyChanged: (b, o, n) =>
-				{
-                    var self = (DataGrid)b;
-                    self._headerView.BackgroundColor = (bool)n ? self.BorderColor : self.HeaderBackground;
-				});
+				propertyChanged: (b, o, n) => ((DataGrid) b)._headerView.BackgroundColor = (bool)n ? ((DataGrid) b).BorderColor : ((DataGrid) b).HeaderBackground);
 
 		public static readonly BindableProperty SortedColumnIndexProperty =
 			BindableProperty.Create(nameof(SortedColumnIndex), typeof(SortData), typeof(DataGrid), null, BindingMode.TwoWay,
 				validateValue: (b, v) => {
-                    var self = (DataGrid)b;
-                    var sData = (SortData)v;
+					var self = (DataGrid)b;
+					var sData = (SortData)v;
 
 					return
 						sData == null || //setted to null
@@ -258,9 +247,8 @@ namespace Xamarin.Forms.DataGrid
 						(sData.Index < self.Columns.Count && self.Columns.ElementAt(sData.Index).SortingEnabled);
 				},
 				propertyChanged: (b, o, n) => {
-                    var self = (DataGrid)b;
-                    if (o != n)
-						self.SortItems((SortData)n);
+					var self = (DataGrid)b;
+					self.SortItems((SortData)n);
 				});
 
 		public static readonly BindableProperty HeaderLabelStyleProperty =
@@ -273,8 +261,8 @@ namespace Xamarin.Forms.DataGrid
 			BindableProperty.Create(nameof(SortIconStyle), typeof(Style), typeof(DataGrid), null,
 
 				propertyChanged: (b, o, n) => {
-                    var self = (DataGrid)b;
-                    var style = ((Style)n).Setters.FirstOrDefault(x => x.Property == Image.SourceProperty);
+					var self = (DataGrid)b;
+					var style = ((Style) n).Setters.FirstOrDefault(x => x.Property == Image.SourceProperty);
 					if (style != null)
 					{
 						if (style.Value is string vs)
@@ -288,21 +276,21 @@ namespace Xamarin.Forms.DataGrid
 			BindableProperty.Create(nameof(NoDataView), typeof(View), typeof(DataGrid),
 				propertyChanged: (b, o, n) => {
 					if (o != n)
-						((DataGrid)b)._noDataView.Content = (View)n;
+						((DataGrid) b)._collectionView.EmptyView = n as View;
 				});
 		#endregion
 
 		#region Properties
 		public Color ActiveRowColor
 		{
-			get { return (Color)GetValue(ActiveRowColorProperty); }
-			set { SetValue(ActiveRowColorProperty, value); }
+			get => (Color)GetValue(ActiveRowColorProperty);
+			set => SetValue(ActiveRowColorProperty, value);
 		}
 
 		public Color HeaderBackground
 		{
-			get { return (Color)GetValue(HeaderBackgroundProperty); }
-			set { SetValue(HeaderBackgroundProperty, value); }
+			get => (Color)GetValue(HeaderBackgroundProperty);
+			set => SetValue(HeaderBackgroundProperty, value);
 		}
 
 		public LineBreakMode LineBreakMode
@@ -313,123 +301,126 @@ namespace Xamarin.Forms.DataGrid
 
 		public Color BorderColor
 		{
-			get { return (Color)GetValue(BorderColorProperty); }
-			set { SetValue(BorderColorProperty, value); }
+			get => (Color)GetValue(BorderColorProperty);
+			set => SetValue(BorderColorProperty, value);
 		}
 
 		public IColorProvider RowsBackgroundColorPalette
 		{
-			get { return (IColorProvider)GetValue(RowsBackgroundColorPaletteProperty); }
-			set { SetValue(RowsBackgroundColorPaletteProperty, value); }
+			get => (IColorProvider)GetValue(RowsBackgroundColorPaletteProperty);
+			set => SetValue(RowsBackgroundColorPaletteProperty, value);
 		}
 
 		public IColorProvider RowsTextColorPalette
 		{
-			get { return (IColorProvider)GetValue(RowsTextColorPaletteProperty); }
-			set { SetValue(RowsTextColorPaletteProperty, value); }
+			get => (IColorProvider)GetValue(RowsTextColorPaletteProperty);
+			set => SetValue(RowsTextColorPaletteProperty, value);
 		}
 
 		public IEnumerable ItemsSource
 		{
-			get { return (IEnumerable)GetValue(ItemsSourceProperty); }
-			set { SetValue(ItemsSourceProperty, value); }
+			get => (IEnumerable)GetValue(ItemsSourceProperty);
+			set => SetValue(ItemsSourceProperty, value);
 		}
 
 		IList<object> _internalItems;
 
 		internal IList<object> InternalItems
 		{
-			get { return _internalItems; }
+			get => _internalItems;
 			set
 			{
 				_internalItems = value;
 
-				SortIfNeeded();
+				if (IsSortable && SortedColumnIndex != null)
+					SortItems(SortedColumnIndex);
+				else
+					_collectionView.ItemsSource = _internalItems;
 			}
 		}
 
         public ColumnCollection Columns
 		{
-			get { return (ColumnCollection)GetValue(ColumnsProperty); }
-			set { SetValue(ColumnsProperty, value); }
+			get => (ColumnCollection)GetValue(ColumnsProperty);
+			set => SetValue(ColumnsProperty, value);
 		}
 
 		public double FontSize
 		{
-			get { return (double)GetValue(FontSizeProperty); }
-			set { SetValue(FontSizeProperty, value); }
+			get => (double)GetValue(FontSizeProperty);
+			set => SetValue(FontSizeProperty, value);
 		}
 
 		public string FontFamily
 		{
-			get { return (string)GetValue(FontFamilyProperty); }
-			set { SetValue(FontFamilyProperty, value); }
+			get => (string)GetValue(FontFamilyProperty);
+			set => SetValue(FontFamilyProperty, value);
 		}
 
 		public int RowHeight
 		{
-			get { return (int)GetValue(RowHeightProperty); }
-			set { SetValue(RowHeightProperty, value); }
+			get => (int)GetValue(RowHeightProperty);
+			set => SetValue(RowHeightProperty, value);
 		}
 
 		public int HeaderHeight
 		{
-			get { return (int)GetValue(HeaderHeightProperty); }
-			set { SetValue(HeaderHeightProperty, value); }
+			get => (int)GetValue(HeaderHeightProperty);
+			set => SetValue(HeaderHeightProperty, value);
 		}
 
 		public bool IsSortable
 		{
-			get { return (bool)GetValue(IsSortableProperty); }
-			set { SetValue(IsSortableProperty, value); }
+			get => (bool)GetValue(IsSortableProperty);
+			set => SetValue(IsSortableProperty, value);
 		}
 
 		public bool SelectionEnabled
 		{
-			get { return (bool)GetValue(SelectionEnabledProperty); }
-			set { SetValue(SelectionEnabledProperty, value); }
+			get => (bool) GetValue(SelectionEnabledProperty);
+			set => SetValue(SelectionEnabledProperty, value);
 		}
 
 		public object SelectedItem
 		{
-			get { return GetValue(SelectedItemProperty); }
-			set { SetValue(SelectedItemProperty, value); }
+			get => GetValue(SelectedItemProperty);
+			set => SetValue(SelectedItemProperty, value);
 		}
 
 		public ICommand PullToRefreshCommand
 		{
-			get { return (ICommand)GetValue(PullToRefreshCommandProperty); }
-			set { SetValue(PullToRefreshCommandProperty, value); }
+			get => (ICommand) GetValue(PullToRefreshCommandProperty);
+			set => SetValue(PullToRefreshCommandProperty, value);
 		}
 
 		public bool IsRefreshing
 		{
-			get { return (bool)GetValue(IsRefreshingProperty); }
-			set { SetValue(IsRefreshingProperty, value); }
+			get => (bool) GetValue(IsRefreshingProperty);
+			set => SetValue(IsRefreshingProperty, value);
 		}
 
 		public Thickness BorderThickness
 		{
-			get { return (Thickness)GetValue(BorderThicknessProperty); }
-			set { SetValue(BorderThicknessProperty, value); }
+			get => (Thickness) GetValue(BorderThicknessProperty);
+			set => SetValue(BorderThicknessProperty, value);
 		}
 
 		public bool HeaderBordersVisible
 		{
-			get { return (bool)GetValue(HeaderBordersVisibleProperty); }
-			set { SetValue(HeaderBordersVisibleProperty, value); }
+			get => (bool) GetValue(HeaderBordersVisibleProperty);
+			set => SetValue(HeaderBordersVisibleProperty, value);
 		}
 
 		public SortData SortedColumnIndex
 		{
-			get { return (SortData)GetValue(SortedColumnIndexProperty); }
-			set { SetValue(SortedColumnIndexProperty, value); }
+			get => (SortData) GetValue(SortedColumnIndexProperty);
+			set => SetValue(SortedColumnIndexProperty, value);
 		}
 
 		public Style HeaderLabelStyle
 		{
-			get { return (Style)GetValue(HeaderLabelStyleProperty); }
-			set { SetValue(HeaderLabelStyleProperty, value); }
+			get => (Style) GetValue(HeaderLabelStyleProperty);
+			set => SetValue(HeaderLabelStyleProperty, value);
 		}
 
 		public ImageSource SortIcon
@@ -449,18 +440,15 @@ namespace Xamarin.Forms.DataGrid
 
         public View NoDataView
 		{
-			get { return (View)GetValue(NoDataViewProperty); }
-			set { SetValue(NoDataViewProperty, value); }
+			get => (View) GetValue(NoDataViewProperty);
+			set => SetValue(NoDataViewProperty, value);
 		}
+
 		#endregion
 
 		#region ctor
 
-		public DataGrid() : this(ListViewCachingStrategy.RecycleElement)
-		{
-		}
-
-		public DataGrid(ListViewCachingStrategy cachingStrategy)
+		public DataGrid()
 		{
 			InitializeComponent();
 
@@ -468,20 +456,9 @@ namespace Xamarin.Forms.DataGrid
 
 			_sortingOrders = new Dictionary<int, SortingOrder>();
 
-			_listView = new ListView(cachingStrategy)
-			{
-				BackgroundColor = Color.Transparent,
-				ItemTemplate = new DataGridRowTemplateSelector(),
-				SeparatorVisibility = SeparatorVisibility.None,
-			};
+			_collectionView.SelectionChanged += CollectionViewSelectionChanged;
 
-			_listView.ItemSelected += ListViewItemSelected;
-
-			_listView.Refreshing += ListViewRefreshing;
-
-			_listView.SetBinding(ListView.RowHeightProperty, new Binding("RowHeight", source: this));
-			Grid.SetRow(_listView, 1);
-			Children.Add(_listView);
+			_refreshView.Refreshing += RefreshViewRefreshing;
 		}
 
 		#endregion
@@ -499,8 +476,8 @@ namespace Xamarin.Forms.DataGrid
             {
 				try
                 {
-					_listView.ItemSelected -= ListViewItemSelected;
-					_listView.Refreshing -= ListViewRefreshing;
+					_collectionView.SelectionChanged -= CollectionViewSelectionChanged;
+					_refreshView.Refreshing -= RefreshViewRefreshing;
 					DisposeGestures();
 				}
 				catch { }
@@ -535,9 +512,9 @@ namespace Xamarin.Forms.DataGrid
 
 		private View GetHeaderViewForColumn(DataGridColumn column)
 		{
-			column.HeaderLabel.Style = column.HeaderLabelStyle ?? this.HeaderLabelStyle ?? (Style)_headerView.Resources["HeaderDefaultStyle"];
+			column.HeaderLabel.Style = column.HeaderLabelStyle ?? HeaderLabelStyle ?? (Style)_headerView.Resources["HeaderDefaultStyle"];
 
-			Grid grid = new() {
+			var grid = new Grid {
 				ColumnSpacing = 0,
 			};
 
@@ -551,7 +528,7 @@ namespace Xamarin.Forms.DataGrid
 				grid.Children.Add(column.SortingIcon);
 				Grid.SetColumn(column.SortingIcon, 1);
 
-				TapGestureRecognizer tgr = new();
+				var tgr = new TapGestureRecognizer();
 				tgr.Tapped += SortTapped;
 				grid.GestureRecognizers.Add(tgr);
 			}
@@ -602,7 +579,7 @@ namespace Xamarin.Forms.DataGrid
 			if (IsSortable && SortedColumnIndex != null)
 				SortItems(SortedColumnIndex);
 			else
-				_listView.ItemsSource = _internalItems;
+				_collectionView.ItemsSource = _internalItems;
 		}
 
 		private void SetColumnsBindingContext()
@@ -626,7 +603,7 @@ namespace Xamarin.Forms.DataGrid
 				return;
 
 			var colIndex = sData.Index;
-			var column = Columns[colIndex];
+			var column = Columns[sData.Index];
 			var sortOrder = sData.Order;
 
 			if (!IsSortable)
@@ -634,22 +611,25 @@ namespace Xamarin.Forms.DataGrid
 			else if (column.PropertyName == null && column.SortingPropertyName == null)
 				throw new InvalidOperationException("Please set the PropertyName or SortingPropertyName property of Column");
 
-			IEnumerable<object> sorted;
+			var sorted = new List<object>();
 
-			//Sort
-			if (sortOrder == SortingOrder.Descendant)
-            {
-                sorted = _internalItems.OrderByDescending(x => ReflectionUtils.GetPropertyValue(x, colIndex));
-			}
-			else
-            {
-                sorted = _internalItems.OrderBy(x => ReflectionUtils.GetPropertyValue(x, colIndex));
-			}
+            //Sort
+            if (column.SortingPropertyName != null) {  // SortingProperty is defined
+                if (sortOrder == SortingOrder.Descendant)
+					sorted = _internalItems.OrderByDescending(x => ReflectionUtils.GetPropertyValue(x, colIndex)).ToList();
+                else
+					sorted = _internalItems.OrderBy(x => ReflectionUtils.GetPropertyValue(x, colIndex)).ToList();
+            } else { // SortingProperty is not defined, so go the default route, using PropertyName
+			    if (sortOrder == SortingOrder.Descendant)
+					sorted = _internalItems.OrderByDescending(x => ReflectionUtils.GetPropertyValue(x, colIndex)).ToList();
+			    else
+					sorted = _internalItems.OrderBy(x => ReflectionUtils.GetPropertyValue(x, colIndex)).ToList();
+            }
 
 			_internalItems = sorted.ToList();
 
-			//Support DescendingIcon property (if set)
-			if (!column.SortingIcon.Style.Setters.Any(x => x.Property == Image.SourceProperty))
+			//Support DescendingIcon property (if setted)
+			if (column.SortingIcon.Style.Setters.All(x => x.Property != Image.SourceProperty))
 			{
 				if (SortIconProperty.DefaultValue != SortIcon)
 					column.SortingIcon.Source = SortIcon;
@@ -670,7 +650,7 @@ namespace Xamarin.Forms.DataGrid
 			_sortingOrders[colIndex] = sortOrder;
 			SortedColumnIndex = sData;
 
-			_listView.ItemsSource = _internalItems;
+			_collectionView.ItemsSource = _internalItems;
 		}
 
         private void ToggleSortIcon(DataGridColumn column, SortingOrder sortOrder)
@@ -684,23 +664,20 @@ namespace Xamarin.Forms.DataGrid
         #region Methods
         public void ScrollTo(object item, ScrollToPosition position, bool animated = true)
         {
-			_listView.ScrollTo(item, position, animated);
+			_collectionView.ScrollTo(item, position:position, animate:animated);
         }
 
-		private void ListViewItemSelected(object sender, SelectedItemChangedEventArgs e)
+		private void CollectionViewSelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
 			if (SelectionEnabled)
-			{
-				SelectedItem = _listView.SelectedItem;
-				ItemSelected?.Invoke(this, e);
-			}
+				SelectedItem = _collectionView.SelectedItem;
 			else
-			{
-				_listView.SelectedItem = null;
-			}
+				_collectionView.SelectedItem = null;
+
+			ItemSelected?.Invoke(this, e);
 		}
 
-		private void ListViewRefreshing(object sender, EventArgs e)
+		private void RefreshViewRefreshing(object sender, EventArgs e)
 		{
 			Refreshing?.Invoke(this, e);
 		}
