@@ -20,8 +20,8 @@ namespace Xamarin.Forms.DataGrid
 		#endregion
 
 		#region Fields
-		private static ColumnDefinition _starColumn = new() { Width = DataGridColumn.StarLength };
-		private static ColumnDefinition _autoColumn = new() { Width = DataGridColumn.AutoLength };
+		private static readonly ColumnDefinition _starColumn = new() { Width = DataGridColumn.StarLength };
+		private static readonly ColumnDefinition _autoColumn = new() { Width = DataGridColumn.AutoLength };
 		private static readonly Lazy<ImageSource> _defaultSortIcon = new(() => ImageSource.FromResource("Xamarin.Forms.DataGrid.up.png", typeof(DataGrid).GetTypeInfo().Assembly));
         private static Lazy<Style> _defaultSortIconStyle;
         private readonly Dictionary<int, SortingOrder> _sortingOrders;
@@ -460,21 +460,16 @@ namespace Xamarin.Forms.DataGrid
 		{
 		}
 
-		~DataGrid()
-        {
-			_listView.ItemSelected -= ListViewItemSelected;
-			_listView.Refreshing -= ListViewRefreshing;
-		}
-
 		public DataGrid(ListViewCachingStrategy cachingStrategy)
 		{
 			InitializeComponent();
 
-            _defaultSortIconStyle = new(() => (Style)_headerView.Resources["SortIconStyle"]);
+			_defaultSortIconStyle = new(() => (Style)_headerView.Resources["SortIconStyle"]);
 
-            _sortingOrders = new Dictionary<int, SortingOrder>();
+			_sortingOrders = new Dictionary<int, SortingOrder>();
 
-			_listView = new ListView(cachingStrategy) {
+			_listView = new ListView(cachingStrategy)
+			{
 				BackgroundColor = Color.Transparent,
 				ItemTemplate = new DataGridRowTemplateSelector(),
 				SeparatorVisibility = SeparatorVisibility.None,
@@ -495,8 +490,29 @@ namespace Xamarin.Forms.DataGrid
 		protected override void OnParentSet()
 		{
 			base.OnParentSet();
-			InitHeaderView();
-		}
+
+            if (Parent != null)
+            {
+                InitHeaderView();
+            }
+            else
+            {
+				try
+                {
+					_listView.ItemSelected -= ListViewItemSelected;
+					_listView.Refreshing -= ListViewRefreshing;
+
+					foreach (Grid grid in _headerView.Children)
+					{
+						foreach (TapGestureRecognizer tgr in grid.GestureRecognizers)
+						{
+							tgr.Tapped -= SortTapped;
+						}
+					}
+				}
+				catch { }
+            }
+        }
 
 		protected override void OnBindingContextChanged()
 		{
@@ -532,19 +548,22 @@ namespace Xamarin.Forms.DataGrid
 				Grid.SetColumn(column.SortingIcon, 1);
 
 				TapGestureRecognizer tgr = new();
-				tgr.Tapped += (s, e) => {
-					int index = Columns.IndexOf(column);
-					SortingOrder order = _sortingOrders[index] == SortingOrder.Ascendant ? SortingOrder.Descendant : SortingOrder.Ascendant;
-
-					if (Columns.ElementAt(index).SortingEnabled)
-						SortedColumnIndex = new SortData(index, order);
-				};
+				tgr.Tapped += SortTapped;
 				grid.GestureRecognizers.Add(tgr);
 			}
 
 			grid.Children.Add(column.HeaderLabel);
 
 			return grid;
+		}
+
+		private void SortTapped(object sender, EventArgs e)
+		{
+			int index = Columns.IndexOf((DataGridColumn) sender);
+			SortingOrder order = _sortingOrders[index] == SortingOrder.Ascendant ? SortingOrder.Descendant : SortingOrder.Ascendant;
+
+			if (Columns.ElementAt(index).SortingEnabled)
+				SortedColumnIndex = new SortData(index, order);
 		}
 
 		private void InitHeaderView()
