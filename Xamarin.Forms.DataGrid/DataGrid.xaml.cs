@@ -620,28 +620,25 @@ namespace Xamarin.Forms.DataGrid
 			if (InternalItems == null || sData.Index >= Columns.Count || !Columns[sData.Index].SortingEnabled)
 				return;
 
-			var column = Columns[sData.Index];
-			SortingOrder order = sData.Order;
+			var colIndex = sData.Index;
+			var column = Columns[colIndex];
+			var sortOrder = sData.Order;
 
 			if (!IsSortable)
 				throw new InvalidOperationException("This DataGrid is not sortable");
 			else if (column.PropertyName == null && column.SortingPropertyName == null)
 				throw new InvalidOperationException("Please set the PropertyName or SortingPropertyName property of Column");
 
-			column.SortingIcon.Style = SortIconStyle ?? DefaultSortIconStyle;
-
 			IEnumerable<object> sorted;
 
 			//Sort
-			if (order == SortingOrder.Descendant)
+			if (sortOrder == SortingOrder.Descendant)
             {
-                sorted = _internalItems.OrderByDescending(x => ReflectionUtils.GetPropertyValue(x, sData.Index));
-				column.SortingIcon.RotateXTo(180);
+                sorted = _internalItems.OrderByDescending(x => ReflectionUtils.GetPropertyValue(x, colIndex));
 			}
 			else
             {
-                sorted = _internalItems.OrderBy(x => ReflectionUtils.GetPropertyValue(x, sData.Index));
-				column.SortingIcon.RotateXTo(0);
+                sorted = _internalItems.OrderBy(x => ReflectionUtils.GetPropertyValue(x, colIndex));
 			}
 
 			_internalItems = sorted.ToList();
@@ -655,7 +652,7 @@ namespace Xamarin.Forms.DataGrid
 
             for (int i = 0; i < Columns.Count; i++)
             {
-                if (i != sData.Index)
+                if (i != colIndex)
                 {
                     if (Columns[i].SortingIcon.Source != null)
                         Columns[i].SortingIcon.IsVisible = false;
@@ -663,12 +660,19 @@ namespace Xamarin.Forms.DataGrid
                 }
             }
 
-            column.SortingIcon.IsVisible = true;
+			ToggleSortIcon(column, sortOrder);
 
-			_sortingOrders[sData.Index] = order;
+			_sortingOrders[colIndex] = sortOrder;
 			SortedColumnIndex = sData;
 
 			_listView.ItemsSource = _internalItems;
+		}
+
+        private void ToggleSortIcon(DataGridColumn column, SortingOrder sortOrder)
+        {
+			column.SortingIcon.Style = SortIconStyle ?? DefaultSortIconStyle;
+			column.SortingIcon.RotateXTo(sortOrder == SortingOrder.Descendant ? 180 : 0);
+			column.SortingIcon.IsVisible = true;
 		}
         #endregion
 
