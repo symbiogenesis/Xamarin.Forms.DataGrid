@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Reflection;
@@ -124,7 +125,36 @@ namespace Xamarin.Forms.DataGrid
 
 		void HandleItemsSourceCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
-			InternalItems = new List<object>(((IList)sender).Cast<object>());
+			switch (e.Action)
+			{
+				case NotifyCollectionChangedAction.Add:
+					foreach (var item in e.NewItems)
+						_internalItems.Add(item);
+					break;
+
+				case NotifyCollectionChangedAction.Move:
+					// Not tracking order
+					break;
+
+					case NotifyCollectionChangedAction.Remove:
+					foreach (var item in e.OldItems)
+						_internalItems.Remove(item);
+					break;
+
+				case NotifyCollectionChangedAction.Replace:
+					foreach (var item in e.OldItems)
+						_internalItems.Remove(item);
+					foreach (var item in e.NewItems)
+						_internalItems.Add(item);
+					break;
+
+				case NotifyCollectionChangedAction.Reset:
+					_internalItems.Clear();
+					break;
+			}
+
+			SortIfNeeded();
+
 			if (SelectedItem != null && !InternalItems.Contains(SelectedItem))
 				SelectedItem = null;
 		}
@@ -478,6 +508,7 @@ namespace Xamarin.Forms.DataGrid
 		private void Reload()
 		{
 			InternalItems = new List<object>(_internalItems);
+			//Maybe just use OnPropertyChanged(nameof(ItemsSource));
 		}
 		#endregion
 
