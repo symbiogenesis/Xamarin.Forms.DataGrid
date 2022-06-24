@@ -476,13 +476,16 @@ namespace Xamarin.Forms.DataGrid
 			};
 
 			_listView.ItemSelected += (s, e) => {
-				if (SelectionEnabled)
-					SelectedItem = _listView.SelectedItem;
-				else
-					_listView.SelectedItem = null;
-
-				ItemSelected?.Invoke(this, e);
-			};
+                if (SelectionEnabled)
+                {
+                    SelectedItem = _listView.SelectedItem;
+                    ItemSelected?.Invoke(this, e);
+                }
+                else
+                {
+                    _listView.SelectedItem = null;
+                }
+            };
 
 			_listView.Refreshing += (s, e) => Refreshing?.Invoke(this, e);
 
