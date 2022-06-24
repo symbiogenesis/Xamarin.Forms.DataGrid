@@ -57,8 +57,9 @@ namespace Xamarin.Forms.DataGrid
 			Padding = new Thickness(DataGrid.BorderThickness.HorizontalThickness / 2,
 				DataGrid.BorderThickness.VerticalThickness / 2);
 
-			foreach (var col in DataGrid.Columns)
+			for (int i = 0; i < DataGrid.Columns.Count; i++)
 			{
+				DataGridColumn col = DataGrid.Columns[i];
 				ColumnDefinitions.Add(new ColumnDefinition {Width = col.Width});
 				View cell;
 
@@ -84,7 +85,7 @@ namespace Xamarin.Forms.DataGrid
 				}
 
 				Children.Add(cell);
-				SetColumn(cell, DataGrid.Columns.IndexOf(col));
+				SetColumn(cell, i);
 			}
 		}
 
@@ -123,12 +124,14 @@ namespace Xamarin.Forms.DataGrid
 			{
 				v.BackgroundColor = bgColor;
 				var contentView = v as ContentView;
-                if (v is Label label)
-                {
-                    label.TextColor = textColor;
-                }
+				if (v is Label label)
+				{
+					label.TextColor = textColor;
+				}
 				else if (contentView?.Content is Label cvLabel)
+				{
 					cvLabel.TextColor = textColor;
+				}
 			}
 		}
 
