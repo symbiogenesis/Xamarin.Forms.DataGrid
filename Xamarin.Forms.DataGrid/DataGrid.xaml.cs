@@ -501,23 +501,27 @@ namespace Xamarin.Forms.DataGrid
                 {
 					_listView.ItemSelected -= ListViewItemSelected;
 					_listView.Refreshing -= ListViewRefreshing;
-
-					foreach (Grid grid in _headerView.Children)
-					{
-						foreach (TapGestureRecognizer tgr in grid.GestureRecognizers)
-						{
-							tgr.Tapped -= SortTapped;
-						}
-					}
+					DisposeGestures();
 				}
 				catch { }
             }
         }
 
-		protected override void OnBindingContextChanged()
+        protected override void OnBindingContextChanged()
 		{
 			base.OnBindingContextChanged();
 			SetColumnsBindingContext();
+		}
+
+		private void DisposeGestures()
+		{
+			foreach (Grid grid in _headerView.Children)
+			{
+				foreach (TapGestureRecognizer tgr in grid.GestureRecognizers)
+				{
+					tgr.Tapped -= SortTapped;
+				}
+			}
 		}
 
 		private void Reload()
@@ -569,6 +573,7 @@ namespace Xamarin.Forms.DataGrid
 		private void InitHeaderView()
 		{
 			SetColumnsBindingContext();
+			DisposeGestures();
 			_headerView.Children.Clear();
 			_headerView.ColumnDefinitions.Clear();
 			_sortingOrders.Clear();
