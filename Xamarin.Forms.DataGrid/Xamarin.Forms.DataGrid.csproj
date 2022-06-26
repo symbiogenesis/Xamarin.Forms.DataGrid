@@ -22,11 +22,7 @@
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
 	  <WarningLevel>5</WarningLevel>
-	</PropertyGroup> 
-	
-	<ItemGroup>
-		<None Remove="up.png" />
-	</ItemGroup>
+	</PropertyGroup>
 
 	<ItemGroup>
 		<EmbeddedResource Include="up.png" />
