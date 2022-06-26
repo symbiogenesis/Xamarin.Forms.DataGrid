@@ -492,12 +492,11 @@ namespace Xamarin.Forms.DataGrid
 
 		private void DisposeGestures()
 		{
-			foreach (Grid grid in _headerView.Children)
+			var gestureRecognizers = _headerView.Children.SelectMany(v => v.GestureRecognizers);
+
+            foreach (var tgr in gestureRecognizers.Cast<TapGestureRecognizer>())
 			{
-				foreach (TapGestureRecognizer tgr in grid.GestureRecognizers)
-				{
-					tgr.Tapped -= SortTapped;
-				}
+				tgr.Tapped -= SortTapped;
 			}
 		}
 
