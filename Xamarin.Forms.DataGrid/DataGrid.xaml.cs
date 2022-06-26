@@ -679,8 +679,13 @@ namespace Xamarin.Forms.DataGrid
 
 		private void RefreshViewRefreshing(object sender, EventArgs e)
 		{
-			Refreshing?.Invoke(this, e);
-		}
-		#endregion
-	}
+            if (PullToRefreshCommand == null && Refreshing == null)
+            {
+				((RefreshView)sender).IsRefreshing = false;
+            }
+
+            Refreshing?.Invoke(this, e);
+        }
+        #endregion
+    }
 }
