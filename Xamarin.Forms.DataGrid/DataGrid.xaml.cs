@@ -209,13 +209,13 @@ namespace Xamarin.Forms.DataGrid
                     var self = (DataGrid)b;
                     if (n == null)
 					{
-						self._refreshView.IsEnabled = false;
+                        self._refreshView.IsEnabled = false;
 						self._refreshView.Command = null;
 					}
 					else
 					{
-						self._refreshView.IsEnabled = true;
-						self._refreshView.Command = n as ICommand;
+                        self._refreshView.IsEnabled = true;
+						self._refreshView.Command = (ICommand)n;
 					}
 				});
 
