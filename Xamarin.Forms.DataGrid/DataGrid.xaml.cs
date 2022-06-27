@@ -23,7 +23,7 @@ namespace Xamarin.Forms.DataGrid
 		private static readonly ColumnDefinition _starColumn = new() { Width = DataGridColumn.StarLength };
 		private static readonly ColumnDefinition _autoColumn = new() { Width = DataGridColumn.AutoLength };
 		private static readonly Lazy<ImageSource> _defaultSortIcon = new(() => ImageSource.FromResource("Xamarin.Forms.DataGrid.up.png", typeof(DataGrid).GetTypeInfo().Assembly));
-        private static Lazy<Style> _defaultSortIconStyle;
+		private static Lazy<Style> _defaultSortIconStyle;
         private readonly Dictionary<int, SortingOrder> _sortingOrders;
         #endregion
 
@@ -474,7 +474,8 @@ namespace Xamarin.Forms.DataGrid
 		{
 			InitializeComponent();
 
-			_defaultSortIconStyle = new(() => (Style)_headerView.Resources["SortIconStyle"]);
+			if (_defaultSortIconStyle == null)
+				_defaultSortIconStyle = new(() => (Style)_headerView.Resources["SortIconStyle"]);
 
 			_sortingOrders = new Dictionary<int, SortingOrder>();
 
