@@ -479,7 +479,7 @@ namespace Xamarin.Forms.DataGrid
 			_collectionView.SelectionChanged += CollectionViewSelectionChanged;
 
 			_refreshView.Refreshing += RefreshViewRefreshing;
-		}
+        }
 
 		#endregion
 
@@ -564,9 +564,7 @@ namespace Xamarin.Forms.DataGrid
 		{
 			SetColumnsBindingContext();
 			DisposeGestures();
-			_headerView.Children.Clear();
-			_headerView.ColumnDefinitions.Clear();
-			_sortingOrders.Clear();
+			DisposeHeader();
 
 			_headerView.Padding = new Thickness(BorderThickness.Left, BorderThickness.Top, BorderThickness.Right, 0);
 			_headerView.ColumnSpacing = BorderThickness.HorizontalThickness;
@@ -585,6 +583,13 @@ namespace Xamarin.Forms.DataGrid
 					_sortingOrders.Add(Columns.IndexOf(col), SortingOrder.None);
 				}
 			}
+		}
+
+		private void DisposeHeader()
+		{
+			_headerView.Children.Clear();
+            _headerView.ColumnDefinitions.Clear();
+            _sortingOrders.Clear();
 		}
 
 		private void SortIfNeeded()
@@ -708,6 +713,7 @@ namespace Xamarin.Forms.DataGrid
             _collectionView.SelectionChanged -= CollectionViewSelectionChanged;
             _refreshView.Refreshing -= RefreshViewRefreshing;
             DisposeGestures();
+            DisposeHeader();
             Children.Clear();
             _internalItems.Clear();
             _internalItems = null;
