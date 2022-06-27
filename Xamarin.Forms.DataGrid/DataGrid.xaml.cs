@@ -476,7 +476,6 @@ namespace Xamarin.Forms.DataGrid
 
 			_sortingOrders = new Dictionary<int, SortingOrder>();
 
-			_collectionView.ItemSizingStrategy = ItemSizingStrategy.MeasureFirstItem;
 			_collectionView.SelectionChanged += CollectionViewSelectionChanged;
 
 			_refreshView.Refreshing += RefreshViewRefreshing;
