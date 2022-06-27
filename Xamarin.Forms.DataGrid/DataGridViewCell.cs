@@ -1,8 +1,9 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 
 namespace Xamarin.Forms.DataGrid
 {
-	internal sealed class DataGridViewCell : Grid
+	internal sealed class DataGridViewCell : Grid, IDisposable
 	{
 		#region Fields
 
@@ -149,22 +150,7 @@ namespace Xamarin.Forms.DataGrid
 			}
 			else
 			{
-				DataGrid.ItemSelected -= DataGrid_ItemSelected;
-				foreach (var child in Children)
-				{
-					if (child is ContentView)
-					{
-                        child.RemoveBinding(BindingContextProperty);
-                    }
-
-					if (child is Label)
-					{
-                        child.RemoveBinding(Label.TextProperty);
-                        child.RemoveBinding(Label.FontSizeProperty);
-                        child.RemoveBinding(Label.FontFamilyProperty);
-                    }
-                }
-                Children.Clear();
+				Dispose();
             }
 
             base.OnParentSet();
@@ -175,6 +161,32 @@ namespace Xamarin.Forms.DataGrid
 			if (DataGrid.SelectionEnabled && (e.CurrentSelection.FirstOrDefault() == RowContext || _hasSelected))
 				UpdateBackgroundColor();
 		}
+
+		public void Dispose()
+		{
+			DataGrid.ItemSelected -= DataGrid_ItemSelected;
+
+			foreach (var child in Children)
+            {
+                if (child is ContentView)
+                {
+                    child.RemoveBinding(BindingContextProperty);
+                }
+
+                if (child is Label)
+                {
+                    child.RemoveBinding(Label.TextProperty);
+                    child.RemoveBinding(Label.FontSizeProperty);
+                    child.RemoveBinding(Label.FontFamilyProperty);
+                }
+
+                if (child is IDisposable disposable)
+                {
+                    disposable.Dispose();
+                }
+            }
+            Children.Clear();
+        }
 
 		#endregion
 	}
