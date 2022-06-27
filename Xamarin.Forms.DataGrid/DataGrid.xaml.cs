@@ -128,14 +128,11 @@ namespace Xamarin.Forms.DataGrid
 					if (self.SelectedItem != null && !self.InternalItems.Contains(self.SelectedItem))
 						self.SelectedItem = null;
 
-					//if (self.NoDataView != null)
+					//if (self._collectionView.EmptyView != null)
 					//{
-					//	if (self.ItemsSource == null || !self.InternalItems.Any())
-					//		self._noDataView.IsVisible = true;
-					//	else if (self._noDataView.IsVisible)
-					//		self._noDataView.IsVisible = false;
+					//	// TODO
 					//}
-				});
+                });
 
 		void HandleItemsSourceCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
