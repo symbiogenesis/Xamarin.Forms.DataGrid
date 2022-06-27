@@ -12,7 +12,7 @@ using Xamarin.Forms.DataGrid.Utils;
 namespace Xamarin.Forms.DataGrid
 {
 	[Xaml.XamlCompilation(Xaml.XamlCompilationOptions.Compile)]
-	public partial class DataGrid
+	public partial class DataGrid : IDisposable
 	{
         #region Events
         public event EventHandler Refreshing;
@@ -474,13 +474,7 @@ namespace Xamarin.Forms.DataGrid
             }
             else
             {
-				try
-                {
-					_collectionView.SelectionChanged -= CollectionViewSelectionChanged;
-					_refreshView.Refreshing -= RefreshViewRefreshing;
-					DisposeGestures();
-				}
-				catch { }
+				Dispose();
             }
         }
 
@@ -684,6 +678,18 @@ namespace Xamarin.Forms.DataGrid
             }
 
             Refreshing?.Invoke(this, e);
+        }
+
+		public void Dispose()
+		{
+			IsEnabled = false;
+            IsVisible = false;
+            _collectionView.SelectionChanged -= CollectionViewSelectionChanged;
+            _refreshView.Refreshing -= RefreshViewRefreshing;
+            DisposeGestures();
+            Children.Clear();
+            _internalItems.Clear();
+            _internalItems = null;
         }
         #endregion
     }
