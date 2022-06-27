@@ -143,14 +143,34 @@ namespace Xamarin.Forms.DataGrid
 
 		protected override void OnParentSet()
 		{
-			base.OnParentSet();
 			if (Parent != null)
+			{
 				DataGrid.ItemSelected += DataGrid_ItemSelected;
+			}
 			else
+			{
 				DataGrid.ItemSelected -= DataGrid_ItemSelected;
-		}
+				foreach (var child in Children)
+				{
+					if (child is ContentView)
+					{
+                        child.RemoveBinding(BindingContextProperty);
+                    }
 
-		private void DataGrid_ItemSelected(object sender, SelectionChangedEventArgs e)
+					if (child is Label)
+					{
+                        child.RemoveBinding(Label.TextProperty);
+                        child.RemoveBinding(Label.FontSizeProperty);
+                        child.RemoveBinding(Label.FontFamilyProperty);
+                    }
+                }
+                Children.Clear();
+            }
+
+            base.OnParentSet();
+        }
+
+        private void DataGrid_ItemSelected(object sender, SelectionChangedEventArgs e)
 		{
 			if (DataGrid.SelectionEnabled && (e.CurrentSelection.FirstOrDefault() == RowContext || _hasSelected))
 				UpdateBackgroundColor();

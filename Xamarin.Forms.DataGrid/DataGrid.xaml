@@ -2,7 +2,6 @@
 <Grid x:Name="self"
       xmlns="http://xamarin.com/schemas/2014/forms"
       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-      xmlns:dg="clr-namespace:Xamarin.Forms.DataGrid"
       xmlns:local="clr-namespace:Xamarin.Forms.DataGrid;assembly=Xamarin.Forms.DataGrid"
       x:Class="Xamarin.Forms.DataGrid.DataGrid"
       Padding="0"
@@ -24,7 +23,7 @@
 					<Setter Property="FontAttributes" Value="Bold" />
 					<Setter Property="HorizontalTextAlignment" Value="Center" />
 					<Setter Property="VerticalTextAlignment" Value="Center" />
-                    <Setter Property="TextColor" Value="{Binding TextColor,Source={RelativeSource AncestorType={x:Type dg:DataGrid}}, Mode=OneTime}"/>
+                    <Setter Property="TextColor" Value="{Binding HeaderForeground,Source={x:Reference self}}"/>
                     <Setter Property="LineBreakMode" Value="{Binding LineBreakMode,Source={x:Reference self}}" />
 				</Style>
 				<Style TargetType="Grid">

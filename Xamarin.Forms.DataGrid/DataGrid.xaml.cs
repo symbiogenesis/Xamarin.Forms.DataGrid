@@ -37,14 +37,30 @@ namespace Xamarin.Forms.DataGrid
 				});
 
 		public static readonly BindableProperty HeaderBackgroundProperty =
-			BindableProperty.Create(nameof(HeaderBackground), typeof(Color), typeof(DataGrid), Color.White,
+			BindableProperty.Create(nameof(HeaderBackground), typeof(Color), typeof(DataGrid), Color.FromHex("#555"),
 				propertyChanged: (b, o, n) => {
 					var self = (DataGrid)b;
 					if (self._headerView != null && !self.HeaderBordersVisible)
 						self._headerView.BackgroundColor = (Color)n;
 				});
 
-		public static readonly BindableProperty LineBreakModeProperty =
+        public static readonly BindableProperty HeaderForegroundProperty =
+			BindableProperty.Create(nameof(HeaderForeground), typeof(Color), typeof(DataGrid), Color.White,
+				propertyChanged: (b, o, n) => {
+					var self = (DataGrid)b;
+					if (self._headerView != null && !self.HeaderBordersVisible)
+					{
+                        foreach (var child in self._headerView.Children)
+						{
+							if (child is Label label)
+							{
+								label.TextColor = (Color)n;
+                            }
+						}
+                    }
+                });
+
+        public static readonly BindableProperty LineBreakModeProperty =
 			BindableProperty.Create(nameof(LineBreakMode), typeof(LineBreakMode), typeof(DataGrid), LineBreakMode.TailTruncation,
 				propertyChanged: (b, o, n) => {
 					var self = (DataGrid)b;
@@ -293,7 +309,13 @@ namespace Xamarin.Forms.DataGrid
 			set => SetValue(HeaderBackgroundProperty, value);
 		}
 
-		public LineBreakMode LineBreakMode
+        public Color HeaderForeground
+        {
+            get => (Color)GetValue(HeaderForegroundProperty);
+            set => SetValue(HeaderForegroundProperty, value);
+        }
+
+        public LineBreakMode LineBreakMode
 		{
 			get => (LineBreakMode)GetValue(LineBreakModeProperty);
 			set => SetValue(LineBreakModeProperty, value);
