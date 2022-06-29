@@ -105,12 +105,12 @@ namespace Xamarin.Forms.DataGrid
 
 		private void UpdateBackgroundColor()
 		{
-			_hasSelected = DataGrid.SelectedItem == RowContext;
+			_hasSelected = DataGrid.SelectedItems?.Contains(RowContext) == true;
 			var actualIndex = DataGrid?.InternalItems?.IndexOf(BindingContext) ?? -1;
 			if (actualIndex > -1)
 			{
 				var bgColor =
-					DataGrid.SelectionEnabled && DataGrid.SelectedItem != null && DataGrid.SelectedItem == RowContext
+                    DataGrid.SelectionMode != SelectionMode.None && _hasSelected
 						? DataGrid.ActiveRowColor
 						: DataGrid.RowsBackgroundColorPalette.GetColor(actualIndex, BindingContext);
 				var textColor = DataGrid.RowsTextColorPalette.GetColor(actualIndex, BindingContext);
@@ -158,7 +158,7 @@ namespace Xamarin.Forms.DataGrid
 
         private void DataGrid_ItemSelected(object sender, SelectionChangedEventArgs e)
 		{
-			if (DataGrid.SelectionEnabled && (e.CurrentSelection.FirstOrDefault() == RowContext || _hasSelected))
+			if (DataGrid.SelectionMode != SelectionMode.None && (e.CurrentSelection.FirstOrDefault() == RowContext || _hasSelected))
 				UpdateBackgroundColor();
 		}
 
