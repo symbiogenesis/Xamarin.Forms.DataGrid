@@ -170,7 +170,7 @@ namespace Xamarin.Forms.DataGrid
             {
 				child.GestureRecognizers.Clear();
 
-                if (child is ContentView)
+				if (child is ContentView)
                 {
                     child.RemoveBinding(BindingContextProperty);
                 }
@@ -187,8 +187,13 @@ namespace Xamarin.Forms.DataGrid
                     disposable.Dispose();
                 }
             }
+
             Children.Clear();
-        }
+
+			RemoveBinding(DataGridProperty);
+			RemoveBinding(IndexProperty);
+			RemoveBinding(RowContextProperty);
+		}
 
 		#endregion
 	}
