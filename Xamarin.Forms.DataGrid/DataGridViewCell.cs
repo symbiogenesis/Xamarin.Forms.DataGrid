@@ -168,6 +168,8 @@ namespace Xamarin.Forms.DataGrid
 
 			foreach (var child in Children)
             {
+				child.GestureRecognizers.Clear();
+
                 if (child is ContentView)
                 {
                     child.RemoveBinding(BindingContextProperty);
