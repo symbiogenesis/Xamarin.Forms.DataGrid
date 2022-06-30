@@ -524,16 +524,6 @@ namespace Xamarin.Forms.DataGrid
             SetColumnsBindingContext();
         }
 
-        private void DisposeGestures()
-        {
-            var gestureRecognizers = _headerView.Children.SelectMany(v => v.GestureRecognizers);
-
-            foreach (var tgr in gestureRecognizers.Cast<TapGestureRecognizer>())
-            {
-                tgr.Tapped -= SortTapped;
-            }
-        }
-
         private void Reload()
         {
             InternalItems = new List<object>(_internalItems);
@@ -584,7 +574,6 @@ namespace Xamarin.Forms.DataGrid
         private void InitHeaderView()
         {
             SetColumnsBindingContext();
-            DisposeGestures();
             DisposeHeader();
 
             _headerView.Padding = new Thickness(BorderThickness.Left, BorderThickness.Top, BorderThickness.Right, 0);
@@ -609,6 +598,16 @@ namespace Xamarin.Forms.DataGrid
 
         private void DisposeHeader()
         {
+            foreach (var child in _headerView.Children)
+            {
+                foreach (var tgr in child.GestureRecognizers.Cast<TapGestureRecognizer>())
+                {
+                    tgr.Tapped -= SortTapped;
+                }
+
+                child.GestureRecognizers.Clear();
+            }
+
             _headerView.Children.Clear();
             _headerView.ColumnDefinitions.Clear();
             _sortingOrders.Clear();
@@ -737,7 +736,6 @@ namespace Xamarin.Forms.DataGrid
             _collectionView.ItemsSource = null;
             _collectionView.SelectionChanged -= CollectionViewSelectionChanged;
             _refreshView.Refreshing -= RefreshViewRefreshing;
-            DisposeGestures();
             DisposeHeader();
             Children.Clear();
             _internalItems.Clear();
