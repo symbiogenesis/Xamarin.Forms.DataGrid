@@ -35,7 +35,7 @@ namespace Xamarin.Forms.DataGrid
 		#region Bindable Properties
 
 		public static readonly BindableProperty DataGridProperty =
-			BindableProperty.Create(nameof(DataGrid), typeof(DataGrid), typeof(DataGridViewCell), null,
+			BindableProperty.Create(nameof(DataGrid), typeof(DataGrid), typeof(DataGridViewCell), null, BindingMode.OneTime,
 				propertyChanged: (b, o, n) => ((DataGridViewCell) b).CreateView());
 
 		public static readonly BindableProperty IndexProperty =
