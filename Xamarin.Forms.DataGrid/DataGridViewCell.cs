@@ -53,6 +53,7 @@ namespace Xamarin.Forms.DataGrid
 		private void CreateView()
 		{
 			UpdateBackgroundColor();
+			HeightRequest = DataGrid.RowHeight;
 			BackgroundColor = DataGrid.BorderColor;
 			ColumnSpacing = DataGrid.BorderThickness.HorizontalThickness / 2;
 			Padding = new Thickness(DataGrid.BorderThickness.HorizontalThickness / 2,

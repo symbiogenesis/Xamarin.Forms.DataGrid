@@ -2,12 +2,7 @@
 {
 	internal class DataGridRowTemplateSelector : DataTemplateSelector
 	{
-		private readonly DataTemplate _dataGridRowTemplate;
-
-		public DataGridRowTemplateSelector()
-		{
-			_dataGridRowTemplate = new DataTemplate(typeof(DataGridViewCell));
-		}
+		private static readonly DataTemplate _dataGridRowTemplate = new(typeof(DataGridViewCell));
 
 		protected override DataTemplate OnSelectTemplate(object item, BindableObject container)
 		{
@@ -17,7 +12,6 @@
 
 			_dataGridRowTemplate.SetValue(DataGridViewCell.DataGridProperty, dataGrid);
 			_dataGridRowTemplate.SetValue(DataGridViewCell.RowContextProperty, item);
-			_dataGridRowTemplate.SetValue(VisualElement.HeightRequestProperty, dataGrid.RowHeight);
 
 			if (items != null)
 				_dataGridRowTemplate.SetValue(DataGridViewCell.IndexProperty, items.IndexOf(item));
