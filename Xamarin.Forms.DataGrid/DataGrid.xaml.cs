@@ -110,6 +110,10 @@ namespace Xamarin.Forms.DataGrid
                         self.Reload();
                 });
 
+        public static readonly BindableProperty RowDataTemplateSelectorProperty =
+            BindableProperty.Create(nameof(RowDataTemplateSelector), typeof(DataTemplateSelector), typeof(DataGrid),
+                defaultValueCreator: b => new DataGridRowTemplateSelector());
+
         public static readonly BindableProperty ColumnsProperty =
             BindableProperty.Create(nameof(Columns), typeof(ColumnCollection), typeof(DataGrid),
                 propertyChanged: (b, o, n) => ((DataGrid)b).InitHeaderView(),
@@ -481,6 +485,12 @@ namespace Xamarin.Forms.DataGrid
         {
             get => (View)GetValue(NoDataViewProperty);
             set => SetValue(NoDataViewProperty, value);
+        }
+
+        public DataTemplateSelector RowDataTemplateSelector
+        {
+            get => (DataTemplateSelector)GetValue(RowDataTemplateSelectorProperty);
+            set => SetValue(RowDataTemplateSelectorProperty, value);
         }
 
         #endregion

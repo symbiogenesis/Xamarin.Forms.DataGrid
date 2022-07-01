@@ -2,15 +2,9 @@
 <Grid x:Name="self"
       xmlns="http://xamarin.com/schemas/2014/forms"
       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-      xmlns:local="clr-namespace:Xamarin.Forms.DataGrid;assembly=Xamarin.Forms.DataGrid"
       x:Class="Xamarin.Forms.DataGrid.DataGrid"
       RowSpacing="0">
-	<Grid.Resources>
-		<ResourceDictionary >
-			<local:DataGridRowTemplateSelector x:Key="RowTemplateSelector"/>
-		</ResourceDictionary>
-	</Grid.Resources>
-	<Grid.RowDefinitions>
+    <Grid.RowDefinitions>
 		<RowDefinition Height="40" />
 		<RowDefinition Height="*" />
 	</Grid.RowDefinitions>
@@ -43,7 +37,7 @@
 		</Grid.Resources>
 	</Grid>
 	<RefreshView Grid.Row="1" x:Name="_refreshView" Grid.RowSpan="2">
-		<CollectionView x:Name="_collectionView" ItemTemplate="{StaticResource RowTemplateSelector}" ItemSizingStrategy="MeasureFirstItem" />
+        <CollectionView x:Name="_collectionView" ItemTemplate="{Binding RowDataTemplateSelector, Source={x:Reference self}}" ItemSizingStrategy="MeasureFirstItem" />
 	</RefreshView>
 
 </Grid>
