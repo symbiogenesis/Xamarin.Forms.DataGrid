@@ -54,7 +54,7 @@ namespace Xamarin.Forms.DataGrid
 		{
 			UpdateBackgroundColor();
 			HeightRequest = DataGrid.RowHeight;
-			BackgroundColor = DataGrid.BorderColor;
+			BackgroundColor = DataGrid.BorderColor; // Cell background is really just the border
 			ColumnSpacing = DataGrid.BorderThickness.HorizontalThickness / 2;
 			Padding = new Thickness(DataGrid.BorderThickness.HorizontalThickness / 2,
 				DataGrid.BorderThickness.VerticalThickness / 2);
