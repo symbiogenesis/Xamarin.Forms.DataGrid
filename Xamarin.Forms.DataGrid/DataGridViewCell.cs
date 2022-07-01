@@ -114,6 +114,10 @@ namespace Xamarin.Forms.DataGrid
                     DataGrid.SelectionMode != SelectionMode.None && _hasSelected
 						? DataGrid.ActiveRowColor
 						: DataGrid.RowsBackgroundColorPalette.GetColor(actualIndex, BindingContext);
+
+				if (BackgroundColor != bgColor && BackgroundColor != Color.Default)
+					bgColor = BackgroundColor;
+
 				var textColor = DataGrid.RowsTextColorPalette.GetColor(actualIndex, BindingContext);
 
 				ChangeColor(bgColor, textColor);
