@@ -182,6 +182,9 @@ namespace Xamarin.Forms.DataGrid
                 SelectedItems = null;
         }
 
+        public static readonly BindableProperty IsBusyProperty =
+            BindableProperty.Create(nameof(IsBusy), typeof(bool), typeof(DataGrid), false);
+
         public static readonly BindableProperty RowHeightProperty =
             BindableProperty.Create(nameof(RowHeight), typeof(int), typeof(DataGrid), 40);
 
@@ -364,6 +367,12 @@ namespace Xamarin.Forms.DataGrid
         {
             get => (IEnumerable)GetValue(ItemsSourceProperty);
             set => SetValue(ItemsSourceProperty, value);
+        }
+
+        public bool IsBusy
+        {
+            get => (bool)GetValue(IsBusyProperty);
+            set => SetValue(IsBusyProperty, value);
         }
 
         IList<object> _internalItems;

@@ -2,12 +2,19 @@
 <Grid x:Name="self"
       xmlns="http://xamarin.com/schemas/2014/forms"
       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-      x:Class="Xamarin.Forms.DataGrid.DataGrid"
+      xmlns:dg="clr-namespace:Xamarin.Forms.DataGrid"
+      x:Class="Xamarin.Forms.DataGrid.DataGrid" IsEnabled="{Binding IsBusy,Source={x:Reference self}, Converter={StaticResource boolToOpposite}}"
       RowSpacing="0">
+
+    <Grid.Resources>
+        <dg:BoolToOppositeConverter x:Key="boolToOpposite" />
+    </Grid.Resources>
+
     <Grid.RowDefinitions>
 		<RowDefinition Height="40" />
 		<RowDefinition Height="*" />
 	</Grid.RowDefinitions>
+
 	<Grid Grid.Row="0" x:Name="_headerView" RowSpacing="0">
 		<Grid.Resources>
 			<ResourceDictionary>
@@ -36,7 +43,10 @@
             </ResourceDictionary>
 		</Grid.Resources>
 	</Grid>
-	<RefreshView Grid.Row="1" x:Name="_refreshView" Grid.RowSpan="2">
+
+    <ActivityIndicator Grid.Row="1" Grid.RowSpan="2" IsRunning="{Binding IsBusy,Source={x:Reference self}}" IsVisible="{Binding IsBusy,Source={x:Reference self}}" />
+
+    <RefreshView Grid.Row="1" Grid.RowSpan="2" x:Name="_refreshView" IsVisible="{Binding IsBusy, Source={x:Reference self}, Converter={StaticResource boolToOpposite}}">
         <CollectionView x:Name="_collectionView" ItemTemplate="{Binding RowDataTemplateSelector, Source={x:Reference self}}" ItemSizingStrategy="MeasureFirstItem" />
 	</RefreshView>
 
