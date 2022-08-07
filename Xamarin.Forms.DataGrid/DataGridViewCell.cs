@@ -66,7 +66,19 @@ namespace Xamarin.Forms.DataGrid
 
 				if (col.CellTemplate != null)
 				{
-					cell = new ContentView {Content = col.CellTemplate.CreateContent() as View};
+					DataTemplate dataTemplate;
+
+					if (col.CellTemplate is DataTemplateSelector dts)
+                    {
+						var binding = col.PropertyName != null ? new Binding(col.PropertyName, source: RowContext) : null;
+						dataTemplate = dts.SelectTemplate(binding, col);
+                    }
+					else
+                    {
+						dataTemplate = col.CellTemplate;
+					}
+
+					cell = new ContentView {Content = dataTemplate.CreateContent() as View};
 					if (col.PropertyName != null)
                     {
                         cell.SetBinding(BindingContextProperty, new Binding(col.PropertyName, source: RowContext));
