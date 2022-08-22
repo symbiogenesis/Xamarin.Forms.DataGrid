@@ -140,14 +140,15 @@ namespace Xamarin.Forms.DataGrid
 			foreach (var v in Children)
 			{
 				v.BackgroundColor = bgColor;
-				var contentView = v as ContentView;
+
 				if (v is Label label)
 				{
 					label.TextColor = textColor;
 				}
-				else if (contentView?.Content is Label cvLabel)
+				else if (v is ContentView contentView)
 				{
-					cvLabel.TextColor = textColor;
+					if (contentView.Content is Label cvLabel)
+						cvLabel.TextColor = textColor;
 				}
 			}
 
