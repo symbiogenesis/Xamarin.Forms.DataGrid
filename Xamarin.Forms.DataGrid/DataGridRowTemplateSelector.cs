@@ -2,8 +2,6 @@
 {
 	public class DataGridRowTemplateSelector : DataTemplateSelector
 	{
-		protected readonly DataTemplate _dataGridRowTemplate = new(typeof(DataGridViewCell));
-
 		protected override DataTemplate OnSelectTemplate(object item, BindableObject container)
 		{
 			return SetValues(item, container);
@@ -11,17 +9,19 @@
 
 		protected DataTemplate SetValues(object item, BindableObject container)
 		{
-			var collectionView = (CollectionView)container;
+			var dataGridRowTemplate = new DataTemplate(typeof(DataGridViewCell));
+
+            var collectionView = (CollectionView)container;
 			var dataGrid = (DataGrid)collectionView.Parent.Parent;
 			var items = dataGrid.InternalItems;
 
-			_dataGridRowTemplate.SetValue(DataGridViewCell.DataGridProperty, dataGrid);
-			_dataGridRowTemplate.SetValue(DataGridViewCell.RowContextProperty, item);
+			dataGridRowTemplate.SetValue(DataGridViewCell.DataGridProperty, dataGrid);
+			dataGridRowTemplate.SetValue(DataGridViewCell.RowContextProperty, item);
 
 			if (items != null)
-				_dataGridRowTemplate.SetValue(DataGridViewCell.IndexProperty, items.IndexOf(item));
+				dataGridRowTemplate.SetValue(DataGridViewCell.IndexProperty, items.IndexOf(item));
 
-			return _dataGridRowTemplate;
+			return dataGridRowTemplate;
 		}
 	}
 }
