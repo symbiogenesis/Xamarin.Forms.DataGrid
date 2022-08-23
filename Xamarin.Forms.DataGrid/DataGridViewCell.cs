@@ -167,10 +167,6 @@ namespace Xamarin.Forms.DataGrid
 			{
 				DataGrid.ItemSelected += DataGrid_ItemSelected;
 			}
-			else
-			{
-				Dispose();
-            }
 
             base.OnParentSet();
         }
