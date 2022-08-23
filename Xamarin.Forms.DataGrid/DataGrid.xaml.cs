@@ -756,6 +756,13 @@ namespace Xamarin.Forms.DataGrid
             _collectionView.SelectionChanged -= CollectionViewSelectionChanged;
             _refreshView.Refreshing -= RefreshViewRefreshing;
             DisposeHeader();
+            foreach (var child in Children)
+            {
+                if (child is IDisposable disposable)
+                {
+                    disposable.Dispose();
+                }
+            }
             Children.Clear();
             _internalItems.Clear();
             _internalItems = null;
