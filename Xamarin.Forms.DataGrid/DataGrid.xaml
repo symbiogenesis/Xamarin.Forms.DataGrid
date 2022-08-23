@@ -47,7 +47,7 @@
     <ActivityIndicator Grid.Row="1" Grid.RowSpan="2" IsRunning="{Binding IsBusy,Source={x:Reference self}}" IsVisible="{Binding IsBusy,Source={x:Reference self}}" />
 
     <RefreshView Grid.Row="1" Grid.RowSpan="2" x:Name="_refreshView" IsVisible="{Binding IsBusy, Source={x:Reference self}, Converter={StaticResource boolToOpposite}}">
-        <CollectionView x:Name="_collectionView" ItemTemplate="{Binding RowDataTemplateSelector, Source={x:Reference self}}" ItemSizingStrategy="MeasureFirstItem" />
+        <CollectionView x:Name="_collectionView" ItemTemplate="{Binding RowDataTemplateSelector, Source={x:Reference self}}" />
 	</RefreshView>
 
 </Grid>
