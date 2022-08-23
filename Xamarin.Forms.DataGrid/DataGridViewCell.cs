@@ -152,7 +152,7 @@ namespace Xamarin.Forms.DataGrid
 				}
 			}
 
-			//BackgroundColor = DataGrid.BorderColor; // Cell background is really just the border
+			BackgroundColor = DataGrid.BorderColor; // Cell background is really just the border
 		}
 
 		protected override void OnBindingContextChanged()
