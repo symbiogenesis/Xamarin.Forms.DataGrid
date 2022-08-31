@@ -527,11 +527,7 @@ namespace Xamarin.Forms.DataGrid
         {
             base.OnParentSet();
 
-            if (Parent != null)
-            {
-                InitHeaderView();
-            }
-            else
+            if (Parent == null)
             {
                 Dispose();
             }
@@ -540,7 +536,7 @@ namespace Xamarin.Forms.DataGrid
         protected override void OnBindingContextChanged()
         {
             base.OnBindingContextChanged();
-            SetColumnsBindingContext();
+            InitHeaderView();
         }
 
         private void Reload()
@@ -603,6 +599,12 @@ namespace Xamarin.Forms.DataGrid
                 for (int i = 0; i < Columns.Count; i++)
                 {
                     DataGridColumn col = Columns[i];
+
+                    var isVisible = col.IsVisible;
+
+                    if (!isVisible)
+                        continue;
+
                     _headerView.ColumnDefinitions.Add(new ColumnDefinition { Width = col.Width });
 
                     var cell = GetHeaderViewForColumn(col);
@@ -690,7 +692,7 @@ namespace Xamarin.Forms.DataGrid
             _internalItems = sorted.ToList();
 
             //Support DescendingIcon property (if setted)
-            if (column.SortingIcon.Style.Setters.All(x => x.Property != Image.SourceProperty))
+            if (column.SortingIcon.Style?.Setters.All(x => x.Property != Image.SourceProperty) == true)
             {
                 if (SortIconProperty.DefaultValue != SortIcon)
                     column.SortingIcon.Source = SortIcon;

@@ -23,6 +23,9 @@ namespace Xamarin.Forms.DataGrid
 		public static readonly BindableProperty PropertyNameProperty =
 			BindableProperty.Create(nameof(PropertyName), typeof(string), typeof(DataGridColumn));
 
+        public static readonly BindableProperty IsVisibleProperty =
+			BindableProperty.Create(nameof(IsVisible), typeof(bool), typeof(DataGridColumn), true);
+
         public static readonly BindableProperty SortingPropertyNameProperty =
             BindableProperty.Create(nameof(SortingPropertyName), typeof(string), typeof(DataGridColumn));
 
@@ -76,6 +79,12 @@ namespace Xamarin.Forms.DataGrid
 			get => (string) GetValue(PropertyNameProperty);
 			set => SetValue(PropertyNameProperty, value);
 		}
+
+        public bool IsVisible
+        {
+            get => (bool)GetValue(IsVisibleProperty);
+            set => SetValue(IsVisibleProperty, value);
+        }
 
         public string SortingPropertyName
         {

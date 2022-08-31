@@ -61,6 +61,10 @@ namespace Xamarin.Forms.DataGrid
 			for (int i = 0; i < DataGrid.Columns.Count; i++)
 			{
 				DataGridColumn col = DataGrid.Columns[i];
+
+				if (!col.IsVisible)
+					continue;
+
 				ColumnDefinitions.Add(new ColumnDefinition {Width = col.Width});
 				View cell;
 
