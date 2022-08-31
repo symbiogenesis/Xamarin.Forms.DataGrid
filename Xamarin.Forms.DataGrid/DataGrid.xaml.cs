@@ -671,22 +671,22 @@ namespace Xamarin.Forms.DataGrid
             else if (column.PropertyName == null && column.SortingPropertyName == null)
                 throw new InvalidOperationException("Please set the PropertyName or SortingPropertyName property of Column");
 
-            var sorted = new List<object>();
+            IEnumerable<object> sorted;
 
             //Sort
             if (column.SortingPropertyName != null)
             {  // SortingProperty is defined
                 if (sortOrder == SortingOrder.Descendant)
-                    sorted = _internalItems.OrderByDescending(x => ReflectionUtils.GetPropertyValue(x, colIndex)).ToList();
+                    sorted = _internalItems.OrderByDescending(x => ReflectionUtils.GetPropertyValue(x, colIndex));
                 else
-                    sorted = _internalItems.OrderBy(x => ReflectionUtils.GetPropertyValue(x, colIndex)).ToList();
+                    sorted = _internalItems.OrderBy(x => ReflectionUtils.GetPropertyValue(x, colIndex));
             }
             else
             { // SortingProperty is not defined, so go the default route, using PropertyName
                 if (sortOrder == SortingOrder.Descendant)
-                    sorted = _internalItems.OrderByDescending(x => ReflectionUtils.GetPropertyValue(x, colIndex)).ToList();
+                    sorted = _internalItems.OrderByDescending(x => ReflectionUtils.GetPropertyValue(x, colIndex));
                 else
-                    sorted = _internalItems.OrderBy(x => ReflectionUtils.GetPropertyValue(x, colIndex)).ToList();
+                    sorted = _internalItems.OrderBy(x => ReflectionUtils.GetPropertyValue(x, colIndex));
             }
 
             _internalItems = sorted.ToList();
